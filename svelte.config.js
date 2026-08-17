@@ -11,7 +11,8 @@ export default {
       $engine: 'src/lib/engine',
       $content: 'src/lib/content',
       $db: 'src/lib/db',
-      $ui: 'src/lib/ui'
+      $ui: 'src/lib/ui',
+      $course: 'content'
     }
   }
 };

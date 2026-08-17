@@ -61,7 +61,14 @@ export interface ReviewItem {
 /** How the learner rated their own recall. Maps onto FSRS grades. */
 export type Grade = 'again' | 'hard' | 'good' | 'easy';
 
-const GRADE_TO_RATING: Record<Grade, Rating> = {
+/**
+ * Rating.Manual is not a grade a learner can give — it exists in ts-fsrs
+ * for programmatic rescheduling — so it is excluded here. Without the
+ * exclusion the preview lookup below is not type-safe.
+ */
+type Gradeable = Exclude<Rating, Rating.Manual>;
+
+const GRADE_TO_RATING: Record<Grade, Gradeable> = {
   again: Rating.Again,
   hard: Rating.Hard,
   good: Rating.Good,
