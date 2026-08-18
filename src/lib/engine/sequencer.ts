@@ -111,6 +111,16 @@ export class ContentGraph {
 // Candidate selection
 // ---------------------------------------------------------------------------
 
+/**
+ * How hard the sequencer pushes letters ahead of words.
+ *
+ * Tuned so the course opens with the handful of letters that make the
+ * first real words readable, then interleaves: mostly words, with a new
+ * letter whenever one would open up several more. Raising this marches
+ * through the alphabet; lowering it strands the script behind vocabulary.
+ */
+const GLYPH_UNLOCK_WEIGHT = 120;
+
 function unknownDeps(deps: string[], known: Set<string>): string[] {
   return deps.filter((d) => !known.has(d));
 }
@@ -146,6 +156,30 @@ export function candidates(
 ): Candidate[] {
   const out: Candidate[] = [];
 
+  // How many still-unlearnable words each unknown glyph would unlock on its
+  // own. A glyph's value depends on the frontier, not on the whole corpus:
+  // ক is worth little once every ক-word you can reach is already known, and
+  // a rarer letter becomes the best move the moment it is the only thing
+  // standing between the learner and a dozen new words.
+  const unlockCount = new Map<string, number>();
+  if (track.script) {
+    for (const l of graph.lexemes.values()) {
+      if (known.lexemes.has(l.id)) continue;
+      const missing = unknownDeps(l.glyphs, known.glyphs);
+      if (missing.length === 0) continue;
+      // Fractional credit, not a binary "is this the last missing letter".
+      // A word one letter away contributes a whole point; a word three
+      // letters away contributes a third. This gives a smooth gradient:
+      // early on, when nothing is readable yet, the highest-value letters
+      // still rise to the top and bootstrap the course; later, letters
+      // fade behind words until one of them is again worth the detour.
+      // A binary measure deadlocks at the start and marches through the
+      // alphabet chart once it unsticks.
+      const share = 1 / missing.length;
+      for (const gid of missing) unlockCount.set(gid, (unlockCount.get(gid) ?? 0) + share);
+    }
+  }
+
   // --- Glyphs: teachable when they appear in a word we can almost read.
   if (track.script) {
     for (const g of graph.glyphs.values()) {
@@ -158,14 +192,17 @@ export function candidates(
       // standalone (ঞ appears only inside conjuncts, so জ্ঞ would be
       // unreachable forever). Ordering below still prefers parts first
       // where they exist; it just never blocks.
+      // Scored on the same scale as lexemes so letters and words interleave
+      // rather than one starving the other. A letter that unlocks several
+      // otherwise-unreachable words outranks any single word; a letter that
+      // unlocks nothing yet waits until it does. Static corpus reach and
+      // the computed teaching order only break ties.
+      const unlocks = unlockCount.get(g.id) ?? 0;
       out.push({
         tier: 'glyph',
         id: g.id,
         introduces: { tier: 'glyph', id: g.id },
-        // Utility order: reach dominates, teaching order breaks ties.
-        // Reach dominates; computed teaching order (which already places
-        // conjuncts after simple glyphs) breaks ties.
-        score: graph.glyphReach(g.id) * 100 - g.order,
+        score: unlocks * GLYPH_UNLOCK_WEIGHT + graph.glyphReach(g.id) / 10 - g.order,
         exercises: exercisesFor('glyph', track)
       });
     }

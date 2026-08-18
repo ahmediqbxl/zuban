@@ -157,3 +157,81 @@ describe('scheduler', () => {
     expect(queue[0].key).toContain('stale');
   });
 });
+
+describe('teaching curve', () => {
+  /**
+   * Walk the whole course the way a learner would and assert the shape of
+   * the trajectory. These guard a balance that is easy to break: weight
+   * letters too heavily and the course becomes the alphabet chart it was
+   * designed to avoid; too lightly and the script never gets taught.
+   */
+  function walk() {
+    const known = emptyKnowledge();
+    const trace: Array<{ step: number; glyphs: number; lexemes: number; sentences: number }> = [];
+    let steps = 0;
+    let strict = 0;
+    for (;;) {
+      const strictC = candidates(graph, known, TRACKS.both, 1);
+      const next = strictC.length > 0 ? strictC[0] : nextItem(graph, known, TRACKS.both);
+      if (!next) break;
+      if (strictC.length > 0) strict++;
+      steps++;
+      if (steps > 2000) throw new Error('did not terminate');
+      if (next.tier === 'glyph') known.glyphs.add(next.id);
+      else if (next.tier === 'lexeme') known.lexemes.add(next.id);
+      else known.sentences.add(next.id);
+      trace.push({
+        step: steps,
+        glyphs: known.glyphs.size,
+        lexemes: known.lexemes.size,
+        sentences: known.sentences.size
+      });
+    }
+    return { known, trace, steps, strict };
+  }
+
+  const { known, trace, steps, strict } = walk();
+  const at = (n: number) => trace[Math.min(n, trace.length) - 1];
+
+  it('never teaches a word containing an untaught letter', () => {
+    // The core invariant. If this breaks, learners meet script they were
+    // never shown and the whole i+1 claim is false.
+    for (const id of known.lexemes) {
+      const lex = graph.lexemes.get(id)!;
+      for (const g of lex.glyphs) expect(known.glyphs, lex.form).toContain(g);
+    }
+  });
+
+  it('offers a strict i+1 item at every step', () => {
+    // Needing to widen the budget means the graph is too sparse.
+    expect(strict).toBe(steps);
+  });
+
+  it('reaches real words within the first handful of items', () => {
+    expect(at(10).lexemes).toBeGreaterThan(0);
+  });
+
+  it('reaches real sentences early, not after the alphabet', () => {
+    // The failure this guards: letters scored too heavily, so the learner
+    // grinds the script before ever seeing a sentence.
+    expect(at(30).sentences).toBeGreaterThan(0);
+  });
+
+  it('interleaves rather than front-loading letters', () => {
+    // At 50 items a learner should have far more words than letters.
+    const p = at(50);
+    expect(p.lexemes).toBeGreaterThan(p.glyphs * 3);
+  });
+
+  it('still teaches the whole script by the end', () => {
+    expect(known.glyphs.size).toBe(bn.glyphs.length);
+  });
+
+  it('coverage climbs fast early, as word frequency implies', () => {
+    const model = buildCoverageModel(bn);
+    const first50 = new Set(
+      [...bn.lexemes].sort((a, b) => (a.freqRank ?? 0) - (b.freqRank ?? 0)).slice(0, 50).map((l) => l.id)
+    );
+    expect(coverage(model, first50)).toBeGreaterThan(0.3);
+  });
+});
