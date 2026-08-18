@@ -18,7 +18,8 @@
     "audio:generate": "node scripts/generate-audio.mjs",
     "audio:plan": "node scripts/generate-audio.mjs --dry-run",
     "test:e2e": "node tests/e2e/smoke.mjs",
-    "test:e2e:prod": "node tests/e2e/smoke.mjs --prod"
+    "test:e2e:prod": "node tests/e2e/smoke.mjs --prod",
+    "test:e2e:speaking": "node tests/e2e/smoke.mjs --speaking"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.6",

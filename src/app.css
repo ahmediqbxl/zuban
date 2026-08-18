@@ -88,6 +88,22 @@ body {
    mid-sentence, and they must not fall back to the UI font. */
 .bn-inline { font-family: var(--font-bn); font-weight: 500; }
 
+/* Romanization is the headline text for speaking learners, so it gets the
+   same typographic weight the script gets for readers — not a subtitle. */
+.roman-prompt {
+  font-size: clamp(1.4rem, 5.6vw, 1.85rem);
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.roman-answer {
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+
 .bn-display { font-size: clamp(2.2rem, 11vw, 3.4rem); font-weight: 500; }
 .bn-lg      { font-size: clamp(1.5rem, 6.5vw, 2rem); }
 .bn-md      { font-size: clamp(1.15rem, 4.6vw, 1.4rem); }

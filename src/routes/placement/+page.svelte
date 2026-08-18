@@ -5,7 +5,11 @@
   import { course, session, SHOW_DRAFTS } from '$ui/session.svelte';
   import { buildProbes, scorePlacement, presentOptions, type PlacementResult } from '$engine/placement';
 
-  const probes = buildProbes(course);
+  // A learner who is not studying the script gets comprehension probes
+  // only — asking them to decode Bangla would measure something they have
+  // explicitly said they do not want.
+  const speakingOnly = $derived(session.placed && !session.track.script);
+  const probes = buildProbes(course).filter((p) => !speakingOnly || p.axis !== 'script');
   let step = $state(-1); // -1 = intro
   let responses = $state<Record<string, number>>({});
   let result = $state<PlacementResult | null>(null);

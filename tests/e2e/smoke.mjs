@@ -25,6 +25,7 @@ import { chromium } from 'playwright';
 
 const args = process.argv.slice(2);
 const PROD = args.includes('--prod');
+const SPEAKING = args.includes('--speaking');
 const PORT = args.includes('--port') ? args[args.indexOf('--port') + 1] : PROD ? '5192' : '5190';
 const URL = `http://127.0.0.1:${PORT}`;
 const SHOTS = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : null;
@@ -38,6 +39,61 @@ const step = async (label, fn) => {
 };
 const shot = async (p, name) => { if (SHOTS) await p.screenshot({ path: `${SHOTS}/${name}.png` }); };
 
+/**
+ * Answer whichever card is on screen, whatever kind it is.
+ *
+ * Shared by both flows: the script track also serves speaking cards, so
+ * duplicating this per-flow meant one loop silently stalled the moment it
+ * met a card type it did not know about.
+ *
+ * Returns what kind of card it handled, or null when there is nothing left.
+ */
+async function answerCard(page) {
+  const holder = page.locator('[data-answer]');
+  const isSay = (await page.locator('button', { hasText: 'Show me' }).count()) > 0;
+  const isSpell = (await page.locator('button', { hasText: 'Check' }).count()) > 0;
+
+  if (isSay) {
+    // Spoken production: reveal, then self-grade.
+    await page.locator('button', { hasText: 'Show me' }).click();
+    await page.waitForTimeout(220);
+  } else if (isSpell) {
+    if ((await holder.count()) === 0) return null;
+    const answer = await holder.getAttribute('data-answer');
+    let rest = answer;
+    for (let guard = 0; guard < 12 && rest.length; guard++) {
+      const tiles = page.locator('[data-answer] button.bn');
+      const texts = (await tiles.allTextContents()).map((t) => t.trim());
+      const hit = texts.findIndex((t) => t && rest.startsWith(t));
+      if (hit < 0) break;
+      rest = rest.slice(texts[hit].length);
+      await tiles.nth(hit).click();
+      await page.waitForTimeout(60);
+    }
+    const check = page.locator('button', { hasText: 'Check' });
+    if ((await check.count()) && (await check.isEnabled())) await check.click();
+    await page.waitForTimeout(180);
+  } else {
+    if ((await holder.count()) === 0) return null;
+    const answer = await holder.getAttribute('data-answer');
+    const esc = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const exact = page.locator('button.choice').filter({ hasText: new RegExp(`^\\s*${esc}\\s*$`) }).first();
+    const target = (await exact.count()) ? exact : page.locator('button.choice').first();
+    if ((await target.count()) === 0) return null;
+    // A disabled choice means the previous card never advanced — bail out
+    // rather than retrying a dead button until the suite times out.
+    if (!(await target.isEnabled())) return null;
+    await target.click();
+    await page.waitForTimeout(150);
+  }
+
+  const grade = page.locator('button.btn-primary', { hasText: 'Got it' });
+  const graded = (await grade.count()) > 0;
+  if (graded) await grade.click();
+  await page.waitForTimeout(150);
+  return { kind: isSay ? 'say' : isSpell ? 'spell' : 'choice', graded };
+}
+
 const browser = await chromium.launch({ executablePath: EXE });
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
 const page = await ctx.newPage();
@@ -50,7 +106,7 @@ page.on('console', (m) => {
   }
 });
 
-console.log(`\n${PROD ? 'PRODUCTION' : 'DEV'} smoke test against ${URL}\n`);
+console.log(`\n${PROD ? 'PRODUCTION' : SPEAKING ? 'SPEAKING-ONLY' : 'DEV (script track)'} smoke test against ${URL}\n`);
 
 if (PROD) {
   // ── Production: the review gate and offline support ───────────────
@@ -100,19 +156,79 @@ if (PROD) {
   });
   await ctx.setOffline(false);
 
+} else if (SPEAKING) {
+  // ── Speaking-only: no script anywhere ─────────────────────────────
+  await page.goto(URL + '/', { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1500);
+  await page.locator('a.btn-primary').first().click(); // Get started
+  await page.waitForTimeout(900);
+  await shot(page, 'speak-goal');
+
+  await step('the goal choice is offered before anything else', async () => {
+    const t = await page.locator('body').innerText();
+    if (!/want to speak it/i.test(t)) throw new Error('no speaking option');
+  });
+
+  await page.locator('button', { hasText: 'I want to speak it' }).click();
+  await page.waitForTimeout(1600);
+  await shot(page, 'speak-learn');
+
+  const kinds = new Set();
+  let answered = 0, sayCards = 0, scriptSeen = 0;
+  for (let i = 0; i < 60; i++) {
+    const q = await page.locator('.card .muted.small').first().textContent().catch(() => null);
+    if (!q) break;
+    kinds.add(q.trim());
+    // Any Bangla script in the card body is a failure for this track.
+    const body = await page.locator('.card').first().innerText();
+    if (/[\u0980-\u09FF]/.test(body)) scriptSeen++;
+    const r = await answerCard(page);
+    if (!r) break;
+    if (r.kind === 'say') sayCards++;
+    if (r.graded) answered++;
+  }
+  console.log(`    ${answered} cards answered, ${sayCards} speaking cards`);
+  console.log(`    exercise types: ${[...kinds].join(' | ')}`);
+  await shot(page, 'speak-progress');
+
+  await step('a speaking session runs without stalling', () => { if (answered < 25) throw new Error(`only ${answered}`); });
+  await step('spoken-production cards appear', () => { if (sayCards === 0) throw new Error('no say-it cards'); });
+  await step('NO Bangla script is ever shown', () => {
+    if (scriptSeen > 0) throw new Error(`${scriptSeen} cards showed script`);
+  });
+
+  await page.goto(URL + '/', { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1200);
+  await shot(page, 'speak-today');
+  await step('progress is recorded', async () => {
+    const vals = await page.locator('.card strong').allTextContents();
+    if (!vals.some((v) => v !== '0%' && v !== '0')) throw new Error('nothing recorded: ' + vals);
+    console.log(`    progress: ${vals.join(' / ')}`);
+  });
+  await step('script progress and the Script tab are both hidden', async () => {
+    // Checked structurally rather than by text: the bottom nav used to
+    // carry a "Script" tab that matched a naive text search.
+    const cards = await page.locator('.card').allInnerTexts();
+    if (cards.some((c) => /^Script\b/m.test(c))) throw new Error('script progress card shown');
+    const tabs = await page.locator('nav.tabs a').allTextContents();
+    if (tabs.some((t) => /Script/.test(t))) throw new Error('Script tab shown: ' + tabs.join(','));
+  });
+
 } else {
   // ── Dev: the full learning flow ───────────────────────────────────
   await page.goto(URL + '/', { waitUntil: 'networkidle' });
   await page.waitForTimeout(1500);
   await shot(page, 'today');
 
-  await step('first run routes into placement', async () => {
+  await step('first run offers the goal choice', async () => {
     const cta = await page.locator('a.btn-primary').first().textContent();
-    if (!/Find where to start/.test(cta)) throw new Error('got: ' + cta);
+    if (!/Get started/.test(cta)) throw new Error('got: ' + cta);
   });
 
   await page.locator('a.btn-primary').first().click();
   await page.waitForTimeout(900);
+  await page.locator('button', { hasText: 'read and write' }).click();
+  await page.waitForTimeout(1200);
   await page.locator('button.btn-primary', { hasText: 'Start' }).click();
   await page.waitForTimeout(600);
   await shot(page, 'placement');
@@ -145,44 +261,18 @@ if (PROD) {
   await shot(page, 'learn');
 
   const kinds = new Set();
-  let answered = 0, spelled = 0;
-  for (let i = 0; i < 70; i++) {
+  let answered = 0, spelled = 0, said = 0;
+  for (let i = 0; i < 80; i++) {
     const q = await page.locator('.card .muted.small').first().textContent().catch(() => null);
     if (!q) break;
     kinds.add(q.trim());
-    const holder = page.locator('[data-answer]');
-    if ((await holder.count()) === 0) break;
-    const answer = await holder.getAttribute('data-answer');
-    const isSpell = (await page.locator('button', { hasText: 'Check' }).count()) > 0;
-
-    if (isSpell) {
-      spelled++;
-      let rest = answer;
-      for (let guard = 0; guard < 12 && rest.length; guard++) {
-        const tiles = page.locator('[data-answer] button.bn');
-        const texts = (await tiles.allTextContents()).map((t) => t.trim());
-        const hit = texts.findIndex((t) => t && rest.startsWith(t));
-        if (hit < 0) break;
-        rest = rest.slice(texts[hit].length);
-        await tiles.nth(hit).click();
-        await page.waitForTimeout(60);
-      }
-      const check = page.locator('button', { hasText: 'Check' });
-      if ((await check.count()) && (await check.isEnabled())) await check.click();
-      await page.waitForTimeout(180);
-    } else {
-      const esc = answer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const btn = page.locator('button.choice').filter({ hasText: new RegExp(`^\\s*${esc}\\s*$`) }).first();
-      if (await btn.count()) await btn.click();
-      else await page.locator('button.choice').first().click();
-      await page.waitForTimeout(150);
-    }
-
-    const good = page.locator('button.btn-primary', { hasText: 'Good' });
-    if (await good.count()) { await good.click(); answered++; }
-    await page.waitForTimeout(140);
+    const r = await answerCard(page);
+    if (!r) break;
+    if (r.kind === 'spell') spelled++;
+    if (r.kind === 'say') said++;
+    if (r.graded) answered++;
   }
-  console.log(`    ${answered} cards answered, ${spelled} spelling cards`);
+  console.log(`    ${answered} cards answered, ${spelled} spelling, ${said} speaking`);
   console.log(`    exercise types: ${[...kinds].join(' | ')}`);
   await shot(page, 'learn-progress');
 

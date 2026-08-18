@@ -21,6 +21,7 @@ import { buildCoverageModel, coverage, scriptCoverage, readableSentences } from 
 import { computeStats, type DayRow, type Stats } from './stats';
 import * as local from '$db/local';
 import { clusters } from '$content/scripts/bengali';
+import { speech } from './speech.svelte';
 
 /**
  * Drafts are shown in dev only, behind a visible banner. Without this the
@@ -58,14 +59,19 @@ export const coverageModel = buildCoverageModel(course);
  * a learner on the listening track would be served a card with nothing to
  * listen to. Recording is incremental, so this flips on per item.
  */
-const AUDIO_REQUIRED = new Set([
-  'word-listen',
-  'sentence-listen',
-  // glyph-find is "hear a sound, pick the letter" — there is no way to pose
-  // it without audio. It was previously planned by the sequencer but built
-  // with no options at all, producing an unanswerable card.
-  'glyph-find'
-]);
+/**
+ * Exercises that cannot be posed without a voice.
+ *
+ * "A voice" means either a clip we ship or a Bengali speech synthesiser on
+ * the device — so this is a runtime check, not a content check. Speaking
+ * exercises are deliberately absent: saying a phrase from an English
+ * prompt is useful practice even with no model to hear afterwards.
+ */
+const AUDIO_REQUIRED = new Set(['word-listen', 'sentence-listen', 'glyph-find']);
+
+function hasVoice(clip?: string): boolean {
+  return Boolean(clip) || speech.status === 'synth';
+}
 
 export const glyphById = new Map(course.glyphs.map((g) => [g.id, g]));
 export const lexemeById = new Map(course.lexemes.map((l) => [l.id, l]));
@@ -97,6 +103,15 @@ export interface Task {
   tiles?: string[];
   /** Clip path, when the item has a recording. */
   audio?: string;
+  /**
+   * The Bangla script form, carried even for learners who never see it —
+   * a speech synthesiser fed romanization reads it as English.
+   */
+  bangla?: string;
+  /** Romanized answer, shown on reveal for speaking exercises. */
+  roman?: string;
+  /** Self-graded rather than multiple choice. */
+  selfGraded?: boolean;
 }
 
 class SessionState {
@@ -278,7 +293,37 @@ class SessionState {
     if (tier === 'lexeme') {
       const l = lexemeById.get(id);
       if (!l) return null;
-      if (AUDIO_REQUIRED.has(kind) && !l.audio) return null;
+      if (AUDIO_REQUIRED.has(kind) && !hasVoice(l.audio)) return null;
+
+      if (kind === 'say-word' || kind === 'say-sentence') {
+        // Production: the learner is shown English and has to say the
+        // Bangla before revealing. Self-graded — no recogniser is reliable
+        // enough for Bengali to fail someone on.
+        return {
+          kind, tier, id, isNew,
+          prompt: l.gloss[0],
+          answer: l.roman,
+          roman: l.roman,
+          bangla: l.form,
+          audio: l.audio,
+          selfGraded: true,
+          note: l.gloss.slice(1).join(', ') || undefined
+        };
+      }
+
+      if (kind === 'word-recall') {
+        // Same recognition test as word-read, but posed in romanization so
+        // it works for a learner who is not studying the script.
+        const pool = course.lexemes.map((x) => x.gloss[0]);
+        return {
+          kind, tier, id, isNew,
+          prompt: l.roman,
+          answer: l.gloss[0],
+          bangla: l.form,
+          audio: l.audio,
+          options: this.shuffleWithAnswer(l.gloss[0], this.distractors(pool, l.gloss[0]), id)
+        };
+      }
 
       if (kind === 'word-spell') {
         // Production, not recognition: build the word from its script
@@ -317,13 +362,50 @@ class SessionState {
         prompt: kind === 'word-listen' ? '' : l.form,
         answer: l.gloss[0],
         options: opts,
-        audio: l.audio
+        audio: l.audio,
+        bangla: l.form
       };
     }
 
     const s = sentenceById.get(id);
     if (!s) return null;
-    if (AUDIO_REQUIRED.has(kind) && !s.audio) return null;
+    if (AUDIO_REQUIRED.has(kind) && !hasVoice(s.audio)) return null;
+
+    if (kind === 'say-sentence') {
+      return {
+        kind, tier, id, isNew,
+        prompt: s.gloss,
+        answer: s.roman,
+        roman: s.roman,
+        bangla: s.form,
+        audio: s.audio,
+        selfGraded: true
+      };
+    }
+
+    if (kind === 'cloze-roman' && s.spans.length > 0) {
+      // Romanized cloze: tests sentence construction without the script.
+      const target =
+        s.spans.find((sp) => !this.known.lexemes.has(sp.lexeme)) ?? s.spans[s.spans.length - 1];
+      const lex = lexemeById.get(target.lexeme);
+      if (!lex) return null;
+      // Romanization has no reliable span mapping back to the script
+      // offsets, so blank the word by string replacement instead.
+      const idx = s.roman.toLowerCase().indexOf(lex.roman.toLowerCase());
+      if (idx < 0) return null;
+      const pool = course.lexemes.map((x) => x.roman);
+      return {
+        kind, tier, id, isNew,
+        prompt: s.roman,
+        answer: lex.roman,
+        bangla: s.form,
+        audio: s.audio,
+        blank: { start: idx, end: idx + lex.roman.length },
+        options: this.shuffleWithAnswer(lex.roman, this.distractors(pool, lex.roman), id),
+        note: `${s.gloss}`
+      };
+    }
+
     if (kind === 'cloze' && s.spans.length > 0) {
       // Blank the least-familiar word so the cloze tests something real.
       const target =
@@ -347,6 +429,7 @@ class SessionState {
       prompt: kind === 'sentence-listen' ? '' : s.form,
       answer: s.gloss,
       audio: s.audio,
+      bangla: s.form,
       options: this.shuffleWithAnswer(
         s.gloss,
         this.distractors(course.sentences.map((x) => x.gloss), s.gloss),
@@ -381,6 +464,7 @@ class SessionState {
       // independently — without this the first exercise that fit was the
       // only one a learner ever saw, and production was never practised.
       await this.seedSiblingExercises(task);
+      await this.creditIntroduced(task);
     }
 
     await Promise.all([
@@ -392,6 +476,50 @@ class SessionState {
     ]);
     this.days = await local.loadDays();
     this.advance();
+  }
+
+  /**
+   * Credit the letters a word just introduced, and queue them for drilling.
+   *
+   * This is the mechanism behind "letters are learned inside words". A word
+   * is teachable when at most one of its letters is new, so meeting the
+   * word *is* meeting the letter — but the letter also has to be marked
+   * known, or the frontier never advances and unknown letters quietly
+   * accumulate across words the learner supposedly knows. Letters credited
+   * this way still get their own review cards, so they are practised
+   * explicitly rather than assumed.
+   *
+   * Only applies when the learner is studying the script at all.
+   */
+  private async creditIntroduced(task: Task) {
+    if (!this.track.script || task.tier !== 'lexeme') return;
+    const lex = lexemeById.get(task.id);
+    if (!lex) return;
+
+    const fresh = lex.glyphs.filter((g) => !this.known.glyphs.has(g));
+    if (fresh.length === 0) return;
+
+    const now = new Date();
+    const items = new Map(this.items);
+    const writes: Promise<unknown>[] = [];
+
+    for (const gid of fresh) {
+      this.addKnown('glyph', gid);
+      writes.push(local.markKnown('glyph', gid));
+      // Queue the letter for explicit practice now that it has been met.
+      for (const kind of ['glyph-sound', 'glyph-find'] as const) {
+        const key = itemKey('glyph', gid, kind);
+        if (items.has(key)) continue;
+        const preview = this.buildTask(key, true);
+        if (!preview || !this.isAnswerable(preview)) continue;
+        const item = this.scheduler.create(key, now);
+        items.set(key, item);
+        writes.push(local.saveItem(item));
+      }
+    }
+
+    this.items = items;
+    await Promise.all(writes);
   }
 
   /**
@@ -434,6 +562,7 @@ class SessionState {
    * skip it than to render something unanswerable.
    */
   private isAnswerable(task: Task): boolean {
+    if (task.selfGraded) return true;
     if (task.kind === 'word-spell') return (task.tiles?.length ?? 0) > 0;
     return (task.options?.length ?? 0) > 1;
   }

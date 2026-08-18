@@ -25,13 +25,25 @@ import {
  * learners are strong at one and weak at the other.
  */
 export type ExerciseKind =
+  // --- script ------------------------------------------------------------
   | 'glyph-sound'      // see a glyph  -> produce its sound
   | 'glyph-find'       // hear a sound -> pick the glyph
-  | 'word-read'        // see a word   -> produce meaning  (literacy)
-  | 'word-listen'      // hear a word  -> pick meaning     (comprehension)
-  | 'word-spell'       // hear a word  -> assemble script  (production)
-  | 'cloze'            // sentence with one lexeme removed
-  | 'sentence-listen'; // hear a sentence -> show comprehension
+  | 'word-read'        // see a word in script -> meaning
+  | 'word-spell'       // assemble the script  -> written production
+  | 'cloze'            // sentence in script, one word removed
+  // --- script-free -------------------------------------------------------
+  | 'word-recall'      // see romanization -> meaning
+  | 'cloze-roman'      // romanized sentence, one word removed
+  // --- listening ---------------------------------------------------------
+  | 'word-listen'      // hear a word     -> pick meaning
+  | 'sentence-listen'  // hear a sentence -> pick meaning
+  // --- speaking ----------------------------------------------------------
+  // The learner is shown English and has to produce the Bangla out loud,
+  // then hears the model and grades themselves. Recognition and production
+  // are scheduled separately because knowing a phrase when you hear it and
+  // being able to say it are very different states.
+  | 'say-word'
+  | 'say-sentence';
 
 export type TargetTier = 'glyph' | 'lexeme' | 'sentence';
 

@@ -29,13 +29,23 @@ import type { ExerciseKind, TargetTier } from './scheduler';
 export interface TrackConfig {
   script: boolean;      // glyph work — literacy
   listening: boolean;   // audio comprehension
-  production: boolean;  // spelling / recall
+  production: boolean;  // written production — spelling
+  speech: boolean;      // spoken production — saying it out loud
 }
 
-export const TRACKS: Record<'heritage' | 'beginner' | 'both', TrackConfig> = {
-  heritage: { script: true, listening: false, production: true },
-  beginner: { script: true, listening: true, production: false },
-  both: { script: true, listening: true, production: true }
+export const TRACKS: Record<'heritage' | 'beginner' | 'both' | 'speaking', TrackConfig> = {
+  heritage: { script: true, listening: false, production: true, speech: true },
+  beginner: { script: true, listening: true, production: false, speech: true },
+  both: { script: true, listening: true, production: true, speech: true },
+  /**
+   * Speak only — no script at all.
+   *
+   * A real and common goal: someone who wants to talk to family and has no
+   * interest in reading. Everything is presented in romanization, and the
+   * exercises are comprehension and saying things out loud. The content
+   * graph is unchanged; only the exercises and presentation differ.
+   */
+  speaking: { script: false, listening: true, production: false, speech: true }
 };
 
 /** Ids the learner has demonstrably acquired, per tier. */
@@ -121,6 +131,22 @@ export class ContentGraph {
  */
 const GLYPH_UNLOCK_WEIGHT = 120;
 
+/**
+ * How strongly whole sentences outrank isolated words.
+ *
+ * A sentence at i+1 — every word known but one — teaches that word *and*
+ * how it is used, so it beats drilling the word alone. Sentences therefore
+ * sit above the top lexeme score once they are within reach, and fall
+ * below it while they still contain several unknowns, which is what keeps
+ * the opening of the course building a base vocabulary first.
+ *
+ * This matters most for a learner who is only interested in speaking:
+ * without it the sequencer serves all 236 words before the first phrase,
+ * which is precisely backwards for someone who wants to talk to people.
+ */
+const SENTENCE_BASE = 5200;
+const SENTENCE_UNKNOWN_PENALTY = 950;
+
 function unknownDeps(deps: string[], known: Set<string>): string[] {
   return deps.filter((d) => !known.has(d));
 }
@@ -131,11 +157,18 @@ function exercisesFor(tier: TargetTier, track: TrackConfig): ExerciseKind[] {
     if (track.script) out.push('glyph-sound', 'glyph-find');
   } else if (tier === 'lexeme') {
     if (track.script) out.push('word-read');
+    else out.push('word-recall'); // same recognition test, romanized
     if (track.listening) out.push('word-listen');
     if (track.production) out.push('word-spell');
+    if (track.speech) out.push('say-word');
   } else {
-    out.push('cloze');
+    // cloze shows the sentence in Bangla script, so a learner who is not
+    // studying the script gets the romanized variant instead. Offering the
+    // script version regardless used to leave a speech-only learner with
+    // no answerable sentence card at all.
+    out.push(track.script ? 'cloze' : 'cloze-roman');
     if (track.listening) out.push('sentence-listen');
+    if (track.speech) out.push('say-sentence');
   }
   return out;
 }
@@ -229,13 +262,38 @@ export function candidates(
     if (known.sentences.has(s.id)) continue;
     const missing = unknownDeps(s.lexemes, known.lexemes);
     if (missing.length > budget) continue;
+
+    // A learner studying the script sees the sentence *in* the script, so
+    // its unknown words must themselves be teachable — at most `budget`
+    // unfamiliar letters each. Known words are already fully decodable, so
+    // only the new one needs checking.
+    //
+    // Without this, a one-word sentence like ধন্যবাদ qualified at step one
+    // (one unknown word, within budget) and was rendered in an alphabet
+    // the learner had not started. Counting every letter in the sentence
+    // instead is the opposite error: it delays the first sentence to
+    // step 114, long after it should have arrived.
+    //
+    // Speaking-only learners read romanization, so none of this applies.
+    if (track.script) {
+      const unreadable = missing.some((lid) => {
+        const lex = graph.lexemes.get(lid);
+        if (!lex) return true;
+        return unknownDeps(lex.glyphs, known.glyphs).length > budget;
+      });
+      if (unreadable) continue;
+    }
     out.push({
       tier: 'sentence',
       id: s.id,
       introduces: missing.length === 1 ? { tier: 'lexeme', id: missing[0] } : null,
-      // Sentences are the goal, so they outrank isolated drilling, but a
-      // sentence with an unknown word costs more than one fully understood.
-      score: 2000 + (s.level ? (6 - s.level) * 100 : 0) - missing.length * 400,
+      // Sentences are the goal, not a reward for finishing the vocabulary.
+      // Simpler ones come first so early phrases are ones a learner can
+      // actually use.
+      score:
+        SENTENCE_BASE +
+        (s.level ? (6 - s.level) * 120 : 0) -
+        missing.length * SENTENCE_UNKNOWN_PENALTY,
       exercises: exercisesFor('sentence', track)
     });
   }

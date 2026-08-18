@@ -69,13 +69,17 @@
     </section>
 
     <div class="row" style="gap: 0.85rem;">
+      {#if session.track.script}
+        <section class="card" style="flex: 1;">
+          <div class="muted small">Script</div>
+          <strong style="font-size: 1.25rem;">{pct(session.scriptProgress)}%</strong>
+          <div class="meter" style="margin-top: 0.5rem;"><i style="width: {pct(session.scriptProgress)}%"></i></div>
+        </section>
+      {/if}
       <section class="card" style="flex: 1;">
-        <div class="muted small">Script</div>
-        <strong style="font-size: 1.25rem;">{pct(session.scriptProgress)}%</strong>
-        <div class="meter" style="margin-top: 0.5rem;"><i style="width: {pct(session.scriptProgress)}%"></i></div>
-      </section>
-      <section class="card" style="flex: 1;">
-        <div class="muted small">Sentences readable</div>
+        <!-- Framed as speech for a speaking learner: "readable" is not a
+             goal they have. -->
+        <div class="muted small">{session.track.script ? 'Sentences readable' : 'Phrases you can say'}</div>
         <strong style="font-size: 1.25rem;">{pct(session.readable)}%</strong>
         <div class="meter" style="margin-top: 0.5rem;"><i style="width: {pct(session.readable)}%"></i></div>
       </section>
@@ -85,11 +89,8 @@
       <!-- Placement first: without it every learner is treated as a cold
            beginner, which wastes a heritage speaker's time on vocabulary
            they already have. -->
-      <a class="btn btn-primary center" href="{base}/placement" style="display: grid; place-items: center; text-decoration: none;">
-        Find where to start
-      </a>
-      <a class="btn center" href="{base}/learn" style="display: grid; place-items: center; text-decoration: none;">
-        Skip — start from the beginning
+      <a class="btn btn-primary center" href="{base}/start" style="display: grid; place-items: center; text-decoration: none;">
+        Get started
       </a>
     {:else}
       <a class="btn btn-primary center" href="{base}/learn" style="display: grid; place-items: center; text-decoration: none;">

@@ -1,24 +1,29 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { base } from '$app/paths';
-  import { session, glyphById, SHOW_DRAFTS, noteById } from '$ui/session.svelte';
-  import { play, canPlay } from '$ui/audio';
+  import { session, glyphById, SHOW_DRAFTS } from '$ui/session.svelte';
+  import { speech } from '$ui/speech.svelte';
+  import { canPlay } from '$ui/audio';
   import type { Grade } from '$engine/scheduler';
 
   let picked = $state<string | null>(null);
   let revealed = $state(false);
-  let built = $state<string[]>([]);   // word-spell: tiles tapped so far
+  let built = $state<string[]>([]);
   let spellWrong = $state(false);
   let openNote = $state<string | null>(null);
 
-  onMount(() => { if (!session.ready) session.load(); });
+  onMount(() => {
+    if (!session.ready) session.load();
+    speech.init();
+  });
 
   const task = $derived(session.current);
   const isCorrect = $derived(picked !== null && task !== null && picked === task.answer);
   const glyph = $derived(task?.tier === 'glyph' ? glyphById.get(task.id) : undefined);
-  const notes = $derived(
-    task?.tier === 'sentence' ? (session.notesFor(task.id) ?? []) : []
-  );
+  const notes = $derived(task?.tier === 'sentence' ? (session.notesFor(task.id) ?? []) : []);
+  const isSpeaking = $derived(task?.kind === 'say-word' || task?.kind === 'say-sentence');
+  /** Script learners see Bangla as the headline; speaking learners don't. */
+  const showScript = $derived(session.track.script);
 
   const clozeParts = $derived.by(() => {
     if (!task?.blank) return null;
@@ -27,16 +32,12 @@
 
   const builtWord = $derived(built.join(''));
   const spellDone = $derived(task?.kind === 'word-spell' && builtWord === task.answer);
+  const canGrade = $derived(revealed && (isCorrect || spellDone || isSpeaking));
 
-  // Reset per-card UI whenever the card changes.
   $effect(() => {
-    task?.id;
-    task?.kind;
-    picked = null;
-    revealed = false;
-    built = [];
-    spellWrong = false;
-    openNote = null;
+    task?.id; task?.kind;
+    picked = null; revealed = false; built = []; spellWrong = false; openNote = null;
+    speech.clearRecording();
   });
 
   function choose(option: string) {
@@ -50,24 +51,28 @@
     if (revealed) return;
     built = [...built, tile];
     spellWrong = false;
-    if (built.join('') === task?.answer) { revealed = true; }
+    if (built.join('') === task?.answer) revealed = true;
   }
 
-  function undo() {
-    built = built.slice(0, -1);
-    spellWrong = false;
-  }
+  function undo() { built = built.slice(0, -1); spellWrong = false; }
 
   function checkSpelling() {
     if (builtWord === task?.answer) { revealed = true; return; }
-    spellWrong = true;
-    revealed = true;
-    grade('again');
+    spellWrong = true; revealed = true; grade('again');
   }
 
-  async function grade(g: Grade) {
-    await session.answer(g);
+  /** Play the model pronunciation for the current card, if there is one. */
+  async function hear() {
+    if (task?.bangla) await speech.say(task.bangla, task.audio, base);
   }
+
+  /** Reveal the model answer, then play it so the learner can compare. */
+  async function revealAndHear() {
+    revealed = true;
+    await hear();
+  }
+
+  async function grade(g: Grade) { await session.answer(g); }
 </script>
 
 {#if !session.ready}
@@ -76,7 +81,7 @@
   <div class="card center" style="margin-top: 2rem;">
     <h2 style="margin: 0 0 0.4rem;">Nothing due</h2>
     <p class="muted small" style="margin: 0 0 1rem;">
-      You've reached the end of the available content. More arrives as the course is reviewed.
+      You've reached the end of the available content.
     </p>
     <a class="btn" href="{base}/" style="text-decoration: none; display: inline-grid; place-items: center;">Back to today</a>
   </div>
@@ -88,48 +93,51 @@
 
   <div class="card">
     <p class="muted small" style="margin: 0 0 0.9rem;">
-      {#if task.kind === 'glyph-sound' && task.demo}How is this vowel sign pronounced?
+      {#if isSpeaking}Say this in Bangla
+      {:else if task.kind === 'glyph-sound' && task.demo}How is this vowel sign pronounced?
       {:else if task.kind === 'glyph-sound'}How is this letter pronounced?
-      {:else if task.kind === 'word-read'}What does this word mean?
+      {:else if task.kind === 'word-read' || task.kind === 'word-recall'}What does this mean?
       {:else if task.kind === 'word-spell'}Spell this word in Bangla
-      {:else if task.kind === 'cloze'}Which word completes the sentence?
+      {:else if task.kind === 'cloze' || task.kind === 'cloze-roman'}Which word completes it?
       {:else if task.kind === 'word-listen'}Which word did you hear?
       {:else if task.kind === 'sentence-listen'}What did you hear?
       {:else}What does this mean?{/if}
     </p>
 
-    {#if canPlay(task.audio)}
-      <button
-        onclick={() => play(task.audio, base)}
-        style="margin-bottom: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem;"
-      >▶ Play</button>
-    {/if}
+    {#if isSpeaking}
+      <!-- Production: English first, Bangla withheld until they've tried. -->
+      <p style="margin: 0 0 0.2rem; font-size: 1.45rem; line-height: 1.35;">{task.prompt}</p>
+      {#if task.note}<p class="faint small" style="margin: 0;">{task.note}</p>{/if}
 
-    {#if task.kind === 'word-spell'}
-      <!-- Prompted in romanization so this tests spelling, not reading —
-           the gap a heritage learner actually has. -->
+      {#if revealed}
+        <div style="margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid var(--border);">
+          <p class="roman-answer" style="margin: 0 0 0.3rem;">{task.roman}</p>
+          {#if showScript}
+            <p class="bn bn-md muted" style="margin: 0;">{task.bangla}</p>
+          {/if}
+        </div>
+      {/if}
+
+    {:else if task.kind === 'word-spell'}
       <p style="margin: 0 0 0.2rem; font-size: 1.5rem; font-style: italic;">{task.prompt}</p>
       {#if task.note}<p class="muted small" style="margin: 0 0 0.9rem;">“{task.note}”</p>{/if}
-      <div
-        class="bn bn-lg"
-        style="min-height: 3.2rem; border-bottom: 2px dashed var(--border); margin-bottom: 0.4rem;"
-        aria-live="polite"
-      >{builtWord}</div>
+      <div class="bn bn-lg" style="min-height: 3.2rem; border-bottom: 2px dashed var(--border); margin-bottom: 0.4rem;" aria-live="polite">{builtWord}</div>
       {#if spellWrong}
-        <p class="small" style="color: var(--bad); margin: 0.3rem 0 0;">
-          Not quite — it's <span class="bn">{task.answer}</span>
-        </p>
+        <p class="small" style="color: var(--bad); margin: 0.3rem 0 0;">Not quite — it's <span class="bn">{task.answer}</span></p>
       {/if}
+
     {:else if clozeParts}
-      <p class="bn bn-lg" style="margin: 0 0 0.4rem;">
-        {clozeParts.before}<span
-          style="border-bottom: 2px dashed var(--accent); padding: 0 1.4rem;"
-        >{revealed ? task.answer : ''}</span>{clozeParts.after}
+      <p class="{task.kind === 'cloze' ? 'bn bn-lg' : 'roman-prompt'}" style="margin: 0 0 0.4rem;">
+        {clozeParts.before}<span style="border-bottom: 2px dashed var(--accent); padding: 0 1.2rem;">{revealed ? task.answer : ''}</span>{clozeParts.after}
       </p>
+      {#if task.note && revealed}<p class="muted small" style="margin: 0.4rem 0 0;">{task.note}</p>{/if}
+
+    {:else if task.kind === 'word-recall'}
+      <p class="roman-prompt" style="margin: 0 0 0.3rem;">{task.prompt}</p>
+
     {:else if task.prompt}
-      <p class="bn {task.tier === 'glyph' ? 'bn-display' : 'bn-lg'}" style="margin: 0 0 0.4rem;">
-        {task.prompt}
-      </p>
+      <p class="bn {task.tier === 'glyph' ? 'bn-display' : 'bn-lg'}" style="margin: 0 0 0.4rem;">{task.prompt}</p>
+
     {:else}
       <p class="muted" style="margin: 0 0 0.4rem; font-size: 1.1rem;">🎧 Listen and choose</p>
     {/if}
@@ -140,39 +148,57 @@
         <span class="faint">— {task.context.roman}, “{task.context.gloss}”</span>
       </p>
     {/if}
-
     {#if glyph?.prebase}
-      <p class="small prebase" style="margin: 0.2rem 0 0;">
-        ⚠ Written <strong>before</strong> its consonant, but pronounced after it.
-      </p>
+      <p class="small prebase" style="margin: 0.2rem 0 0;">⚠ Written <strong>before</strong> its consonant, but pronounced after it.</p>
     {/if}
-    {#if revealed && task.note && task.kind !== 'word-spell'}
+    {#if revealed && task.note && task.kind !== 'word-spell' && !clozeParts && !isSpeaking}
       <p class="muted small" style="margin: 0.5rem 0 0;">{task.note}</p>
     {/if}
   </div>
 
-  {#if task.kind === 'word-spell'}
-    <!-- data-answer is a dev-only end-to-end test hook, absent in production. -->
+  <!-- ── Voice controls ──────────────────────────────────────────── -->
+  {#if (canPlay(task.audio) || speech.status === 'synth') && (revealed || !isSpeaking) && task.bangla}
+    <div class="row" style="margin-top: 0.8rem; gap: 0.5rem;">
+      <button onclick={() => hear()} disabled={speech.speaking} style="flex: 1;">
+        {speech.speaking ? '🔊 Playing…' : '🔊 Hear it'}
+      </button>
+      {#if isSpeaking && speech.canRecord}
+        {#if speech.recording}
+          <button onclick={() => speech.stopRecording()} style="flex: 1; border-color: var(--bad); color: var(--bad);">■ Stop</button>
+        {:else}
+          <button onclick={() => speech.startRecording()} style="flex: 1;">● Record</button>
+        {/if}
+        {#if speech.hasRecording}
+          <button onclick={() => speech.playRecording()} style="flex: 1;">▶ You</button>
+        {/if}
+      {/if}
+    </div>
+    {#if speech.recordError}
+      <p class="faint small" style="margin: 0.4rem 0 0;">{speech.recordError}</p>
+    {/if}
+  {:else if isSpeaking && revealed && speech.status === 'none'}
+    <p class="banner small" style="margin-top: 0.8rem;">
+      No Bangla voice on this device, so there's nothing to play. Recordings
+      are coming; until then this works as recall practice.
+    </p>
+  {/if}
+
+  <!-- ── Answering ───────────────────────────────────────────────── -->
+  {#if isSpeaking && !revealed}
+    <button class="btn-primary" onclick={revealAndHear} style="width: 100%; margin-top: 1rem;">
+      Show me
+    </button>
+  {:else if task.kind === 'word-spell'}
     <div style="margin-top: 1rem;" data-answer={SHOW_DRAFTS ? task.answer : undefined}>
       <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-        {#each task.tiles ?? [] as tile, i}
-          <button
-            class="bn"
-            style="font-size: 1.5rem; padding: 0.55rem 0.9rem; min-width: 3.2rem;"
-            onclick={() => tapTile(tile)}
-            disabled={revealed}
-          >{tile}</button>
+        {#each task.tiles ?? [] as tile}
+          <button class="bn" style="font-size: 1.5rem; padding: 0.55rem 0.9rem; min-width: 3.2rem;" onclick={() => tapTile(tile)} disabled={revealed}>{tile}</button>
         {/each}
       </div>
       {#if !revealed}
-        <!-- Hidden rather than disabled once the word is complete: leaving
-             a dead Check button on screen next to the grade buttons reads
-             as two competing next steps. -->
         <div class="row" style="margin-top: 0.9rem; gap: 0.5rem;">
           <button onclick={undo} disabled={built.length === 0} style="flex: 1;">Undo</button>
-          <button class="btn-primary" onclick={checkSpelling} disabled={built.length === 0} style="flex: 2;">
-            Check
-          </button>
+          <button class="btn-primary" onclick={checkSpelling} disabled={built.length === 0} style="flex: 2;">Check</button>
         </div>
       {:else if spellDone}
         <p class="small center" style="color: var(--good); margin: 0.9rem 0 0;">✓ Correct</p>
@@ -191,13 +217,15 @@
     </div>
   {/if}
 
-  {#if revealed && (isCorrect || spellDone)}
+  {#if canGrade}
     <div style="margin-top: 1.1rem;">
-      <p class="muted small center" style="margin: 0 0 0.6rem;">How did that feel?</p>
+      <p class="muted small center" style="margin: 0 0 0.6rem;">
+        {isSpeaking ? 'How close were you?' : 'How did that feel?'}
+      </p>
       <div class="btn-row">
-        <button onclick={() => grade('again')}>Again</button>
-        <button onclick={() => grade('hard')}>Hard</button>
-        <button class="btn-primary" onclick={() => grade('good')}>Good</button>
+        <button onclick={() => grade('again')}>{isSpeaking ? 'No idea' : 'Again'}</button>
+        <button onclick={() => grade('hard')}>Close</button>
+        <button class="btn-primary" onclick={() => grade('good')}>Got it</button>
         <button onclick={() => grade('easy')}>Easy</button>
       </div>
     </div>
@@ -206,12 +234,7 @@
   {#if notes.length > 0}
     <div style="margin-top: 1.4rem;">
       {#each notes as note}
-        <button
-          class="choice small"
-          style="text-align: left;"
-          onclick={() => (openNote = openNote === note.id ? null : note.id)}
-          aria-expanded={openNote === note.id}
-        >
+        <button class="choice small" style="text-align: left;" onclick={() => (openNote = openNote === note.id ? null : note.id)} aria-expanded={openNote === note.id}>
           {openNote === note.id ? '▾' : '▸'} {note.title}
         </button>
         {#if openNote === note.id}

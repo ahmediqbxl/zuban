@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { base } from '$app/paths';
   import { session, course } from '$ui/session.svelte';
+  import { TRACKS } from '$engine/sequencer';
   import { auth } from '$db/auth.svelte';
   import { install } from '$ui/install.svelte';
   import { projectWeeksTo } from '$ui/stats';
@@ -70,6 +71,29 @@
       Gaining about <strong>{stats.velocity.toFixed(1)} points</strong> of comprehension per week.
     </p>
   {/if}
+
+  <!-- ── Goal ─────────────────────────────────────────────────── -->
+  <section class="card">
+    <h3 style="margin: 0 0 0.4rem; font-size: 1rem;">Your goal</h3>
+    <p class="muted small" style="margin: 0 0 0.8rem;">
+      {#if session.track.script}
+        Speaking and reading. You'll learn the script inside real words.
+      {:else}
+        Speaking only. Everything is written the way it sounds, and you never
+        have to read Bangla script.
+      {/if}
+    </p>
+    <button
+      style="width: 100%;"
+      onclick={() => session.setTrack(session.track.script ? TRACKS.speaking : TRACKS.both)}
+    >
+      {session.track.script ? 'Switch to speaking only' : 'Add reading and writing'}
+    </button>
+    <p class="faint small" style="margin: 0.6rem 0 0;">
+      Switching keeps everything you've learned — it only changes which
+      exercises you get from here.
+    </p>
+  </section>
 
   <!-- ── Placement ────────────────────────────────────────────── -->
   <section class="card">

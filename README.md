@@ -11,10 +11,30 @@ expansion added Bengali as an *interface* language, so Bengali speakers can
 learn Spanish; the other direction is still empty. What exists elsewhere is
 phrasebook-grade.
 
+## Two ways to use it
+
+The first thing the app asks is what you actually want:
+
+**Speak it.** No script, ever. Everything is written the way it sounds —
+*ami bhalo achhi* — and the exercises are understanding people and saying
+things back. This is the right choice if your goal is talking to family.
+
+**Read and write too.** Adds the script, learned inside real words rather
+than off an alphabet chart.
+
+Both use the same content and the same scheduler; they differ in which
+exercises you get and how the language is shown to you. Switching later
+keeps everything you have learned.
+
 ## Status
 
-The app works end to end: placement, five exercise types, spaced review,
-offline, installable. 84 unit tests and a browser smoke test.
+The app works end to end for both paths: goal choice, placement, seven
+exercise types, spaced review, offline, installable. 91 unit tests plus a
+browser smoke test covering each path.
+
+**There is no audio yet**, which matters more for speaking than for
+reading — you can practise recall, but there is no model to imitate unless
+your device happens to have a Bangla voice installed. See "Audio" below.
 
 The Bangla content is **unreviewed draft**, so a production build ships an
 empty course by design and says so on screen. Native-speaker review is the
@@ -55,14 +75,15 @@ scores zero/zero. Same content graph, different entry point.
 | | |
 |---|---|
 | **Placement** | Measures comprehension and script as independent axes, so a heritage learner and a beginner share one content graph with different entry points. Falls back to romanized prompts until audio is recorded. |
-| **Exercises** | Letter→sound, sound→letter, word→meaning, spelling by tile assembly, cloze over sentences, and listening. Each is scheduled independently, because reading a word and spelling it are different skills. |
+| **Exercises** | Speaking: say-it from an English prompt, with record-and-compare. Recognition: word→meaning, romanized cloze, listening. Script (optional): letter→sound, sound→letter, spelling by tile assembly, script cloze. Each is scheduled independently, because saying a phrase and recognising it are different skills. |
 | **Review** | FSRS, with reviews served before new material so forgetting is caught first. |
 | **Script** | Vendored, subsetted Noto Sans Bengali plus a rendering self-test at `/script` carrying the words that break Bengali shaping in practice. |
 | **Progress** | Corpus coverage, script coverage, readable-sentence share, and a pace projection. No streaks. |
 | **Offline** | Static build, IndexedDB state, service worker precache. Nothing touches the network to answer a card. |
 | **Account** | Optional Supabase sync with RLS. Signed-out is a fully supported state, not a degraded one. |
 | **Reminders** | Web Push on due reviews. Install prompt included because iOS only allows push for home-screen web apps. |
-| **Audio** | Pipeline and playback are built; no recordings yet. Exercises needing sound are withheld rather than served empty. |
+| **Audio** | Three layers, degrading in order: a recorded clip we ship, the device's own Bangla voice, then nothing. Exercises needing sound are withheld rather than served empty, and the app says when a device has no voice rather than failing silently. |
+| **Pronunciation** | Record yourself and play it straight back against the model. Works in any browser with a microphone — no recogniser, no server, no per-language support. |
 
 ## Layout
 
@@ -117,6 +138,23 @@ npm run test:e2e:prod            # review gate, service worker, offline
 
 In dev, unreviewed drafts are shown behind a warning banner so the app is
 buildable before review is done. In production they are withheld.
+
+## Audio
+
+A speaking course needs a voice. In order of preference:
+
+1. **Native recordings.** Best, and the only option that is reliably bn-BD
+   rather than bn-IN. Drop MP3s into `static/audio/` named by the SHA-1 of
+   the phrase (see `scripts/generate-audio.mjs`), then `npm run build:content`.
+2. **Synthesis**, to cover the tail:
+   ```bash
+   npm run audio:plan                                   # what's missing
+   ZUBAN_TTS=google GOOGLE_TTS_KEY=... npm run audio:generate
+   ```
+   Every generated clip is marked `synthetic` in the manifest, and Google
+   only offers bn-IN, so each one is a recorded dialect compromise.
+3. **The device's own voice.** Free and automatic where it exists — common
+   on Android, frequently absent on iOS. Nothing to configure.
 
 ## Content review
 

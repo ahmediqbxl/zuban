@@ -72,18 +72,18 @@
       }
     },
     {
-      "id": "bn-09b0",
-      "form": "র",
+      "id": "bn-09a8",
+      "form": "ন",
       "kind": "consonant",
-      "roman": "r",
-      "ipa": "r",
+      "roman": "n",
+      "ipa": "n",
       "order": 4,
       "introducedBy": [
-        "bn-lex-amra-150",
-        "bn-lex-tara-210",
-        "bn-lex-amar-25",
-        "bn-lex-tomar-90",
-        "bn-lex-apnar-260"
+        "bn-lex-apni-120",
+        "bn-lex-apnar-260",
+        "bn-lex-achhen-175",
+        "bn-lex-jani-220",
+        "bn-lex-kemon-330"
       ],
       "provenance": {
         "status": "draft",
@@ -91,18 +91,18 @@
       }
     },
     {
-      "id": "bn-09a8",
-      "form": "ন",
+      "id": "bn-09b0",
+      "form": "র",
       "kind": "consonant",
-      "roman": "n",
-      "ipa": "n",
+      "roman": "r",
+      "ipa": "r",
       "order": 5,
       "introducedBy": [
-        "bn-lex-apni-120",
-        "bn-lex-apnar-260",
-        "bn-lex-achhen-175",
-        "bn-lex-jani-220",
-        "bn-lex-kemon-330"
+        "bn-lex-amra-150",
+        "bn-lex-tara-210",
+        "bn-lex-amar-25",
+        "bn-lex-tomar-90",
+        "bn-lex-apnar-260"
       ],
       "provenance": {
         "status": "draft",
@@ -167,12 +167,31 @@
       }
     },
     {
+      "id": "bn-09b2",
+      "form": "ল",
+      "kind": "consonant",
+      "roman": "l",
+      "ipa": "l",
+      "order": 9,
+      "introducedBy": [
+        "bn-lex-boli-280",
+        "bn-lex-bole-45",
+        "bn-lex-chhele-160",
+        "bn-lex-bangla-205",
+        "bn-lex-bhalo-50"
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
       "id": "bn-09b8",
       "form": "স",
       "kind": "consonant",
       "roman": "s",
       "ipa": "s",
-      "order": 9,
+      "order": 10,
       "introducedBy": [
         "bn-lex-she-35",
         "bn-lex-shomoy-75",
@@ -181,25 +200,6 @@
         "bn-lex-shat-278"
       ],
       "mnemonic": "Usually \"sh\" too, except in some clusters.",
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
-      "id": "bn-09b2",
-      "form": "ল",
-      "kind": "consonant",
-      "roman": "l",
-      "ipa": "l",
-      "order": 10,
-      "introducedBy": [
-        "bn-lex-boli-280",
-        "bn-lex-bole-45",
-        "bn-lex-chhele-160",
-        "bn-lex-bangla-205",
-        "bn-lex-bhalo-50"
-      ],
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -225,33 +225,13 @@
       }
     },
     {
-      "id": "bn-09a4",
-      "form": "ত",
-      "kind": "consonant",
-      "roman": "t",
-      "ipa": "t̪",
-      "order": 12,
-      "introducedBy": [
-        "bn-lex-tumi-40",
-        "bn-lex-tui-300",
-        "bn-lex-tara-210",
-        "bn-lex-tomar-90",
-        "bn-lex-tar-70"
-      ],
-      "mnemonic": "Dental — tongue on the teeth, softer than English t.",
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
       "id": "bn-09c1",
       "form": "ু",
       "kind": "vowel-sign",
       "roman": "u",
       "ipa": "u",
       "prebase": false,
-      "order": 13,
+      "order": 12,
       "introducedBy": [
         "bn-lex-tumi-40",
         "bn-lex-tui-300",
@@ -260,6 +240,26 @@
         "bn-lex-khub-80"
       ],
       "mnemonic": "Hangs below the consonant.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-09a4",
+      "form": "ত",
+      "kind": "consonant",
+      "roman": "t",
+      "ipa": "t̪",
+      "order": 13,
+      "introducedBy": [
+        "bn-lex-tumi-40",
+        "bn-lex-tui-300",
+        "bn-lex-tara-210",
+        "bn-lex-tomar-90",
+        "bn-lex-tar-70"
+      ],
+      "mnemonic": "Dental — tongue on the teeth, softer than English t.",
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -285,18 +285,18 @@
       }
     },
     {
-      "id": "bn-09a6",
-      "form": "দ",
+      "id": "bn-099b",
+      "form": "ছ",
       "kind": "consonant",
-      "roman": "d",
-      "ipa": "d̪",
+      "roman": "chh",
+      "ipa": "tʃʰ",
       "order": 15,
       "introducedBy": [
-        "bn-lex-dekhi-310",
-        "bn-lex-din-85",
-        "bn-lex-desh-125",
-        "bn-lex-dhonnobad-420",
-        "bn-lex-amader-245"
+        "bn-lex-achhi-55",
+        "bn-lex-achho-190",
+        "bn-lex-achhen-175",
+        "bn-lex-achhe-20",
+        "bn-lex-shikhchhi-900"
       ],
       "provenance": {
         "status": "draft",
@@ -304,18 +304,18 @@
       }
     },
     {
-      "id": "bn-099b",
-      "form": "ছ",
+      "id": "bn-09a6",
+      "form": "দ",
       "kind": "consonant",
-      "roman": "chh",
-      "ipa": "tʃʰ",
+      "roman": "d",
+      "ipa": "d̪",
       "order": 16,
       "introducedBy": [
-        "bn-lex-achhi-55",
-        "bn-lex-achho-190",
-        "bn-lex-achhen-175",
-        "bn-lex-achhe-20",
-        "bn-lex-shikhchhi-900"
+        "bn-lex-dekhi-310",
+        "bn-lex-din-85",
+        "bn-lex-desh-125",
+        "bn-lex-dhonnobad-420",
+        "bn-lex-amader-245"
       ],
       "provenance": {
         "status": "draft",
@@ -460,31 +460,12 @@
       }
     },
     {
-      "id": "bn-099a",
-      "form": "চ",
-      "kind": "consonant",
-      "roman": "ch",
-      "ipa": "tʃ",
-      "order": 24,
-      "introducedBy": [
-        "bn-lex-chai-250",
-        "bn-lex-char-138",
-        "bn-lex-panch-158",
-        "bn-lex-cha-258",
-        "bn-lex-chini-402"
-      ],
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
       "id": "bn-09a5",
       "form": "থ",
       "kind": "consonant",
       "roman": "th",
       "ipa": "t̪ʰ",
-      "order": 25,
+      "order": 24,
       "introducedBy": [
         "bn-lex-thaki-400",
         "bn-lex-kothay-240",
@@ -503,13 +484,32 @@
       "kind": "independent-vowel",
       "roman": "e",
       "ipa": "e",
-      "order": 26,
+      "order": 25,
       "introducedBy": [
         "bn-lex-ektu-235",
         "bn-lex-ei-15",
         "bn-lex-eta-88",
         "bn-lex-ek-62",
         "bn-lex-ekhon-52"
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-099a",
+      "form": "চ",
+      "kind": "consonant",
+      "roman": "ch",
+      "ipa": "tʃ",
+      "order": 26,
+      "introducedBy": [
+        "bn-lex-chai-250",
+        "bn-lex-char-138",
+        "bn-lex-panch-158",
+        "bn-lex-cha-258",
+        "bn-lex-chini-402"
       ],
       "provenance": {
         "status": "draft",
@@ -557,13 +557,32 @@
       }
     },
     {
+      "id": "bn-0997",
+      "form": "গ",
+      "kind": "consonant",
+      "roman": "g",
+      "ipa": "g",
+      "order": 29,
+      "introducedBy": [
+        "bn-lex-gan-285",
+        "bn-lex-age-108",
+        "bn-lex-jayga-198",
+        "bn-lex-gorom-254",
+        "bn-lex-lage-124"
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
       "id": "bn-09c0",
       "form": "ী",
       "kind": "vowel-sign",
       "roman": "i",
       "ipa": "i",
       "prebase": false,
-      "order": 29,
+      "order": 30,
       "introducedBy": [
         "bn-lex-ki-95",
         "bn-lex-stri-322",
@@ -572,25 +591,6 @@
         "bn-lex-dhire-394"
       ],
       "mnemonic": "Same sound as ই-কার.",
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
-      "id": "bn-09a7",
-      "form": "ধ",
-      "kind": "consonant",
-      "roman": "dh",
-      "ipa": "d̪ʱ",
-      "order": 30,
-      "introducedBy": [
-        "bn-lex-dhonnobad-420",
-        "bn-lex-dudh-302",
-        "bn-lex-dhire-394",
-        "bn-lex-shudhu-84",
-        "bn-lex-odhikar-430"
-      ],
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -617,19 +617,76 @@
       }
     },
     {
-      "id": "bn-0997",
-      "form": "গ",
+      "id": "bn-09a7",
+      "form": "ধ",
       "kind": "consonant",
-      "roman": "g",
-      "ipa": "g",
+      "roman": "dh",
+      "ipa": "d̪ʱ",
       "order": 32,
       "introducedBy": [
-        "bn-lex-gan-285",
-        "bn-lex-age-108",
-        "bn-lex-jayga-198",
-        "bn-lex-gorom-254",
-        "bn-lex-lage-124"
+        "bn-lex-dhonnobad-420",
+        "bn-lex-dudh-302",
+        "bn-lex-dhire-394",
+        "bn-lex-shudhu-84",
+        "bn-lex-odhikar-430"
       ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-0993",
+      "form": "ও",
+      "kind": "independent-vowel",
+      "roman": "o",
+      "ipa": "o",
+      "order": 33,
+      "introducedBy": [
+        "bn-lex-jao-320",
+        "bn-lex-ota-265",
+        "bn-lex-aro-104",
+        "bn-lex-chao-342",
+        "bn-lex-oyalaikum-908"
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-0982",
+      "form": "ং",
+      "kind": "diacritic",
+      "roman": "ng",
+      "ipa": "ŋ",
+      "order": 34,
+      "introducedBy": [
+        "bn-lex-bangla-205",
+        "bn-lex-mangsho-352",
+        "bn-lex-shongskriti-434",
+        "bn-lex-ingreji-375",
+        "bn-lex-bangladesh-240"
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-0985",
+      "form": "অ",
+      "kind": "independent-vowel",
+      "roman": "o",
+      "ipa": "ɔ",
+      "order": 35,
+      "introducedBy": [
+        "bn-lex-onek-48",
+        "bn-lex-odhikar-430",
+        "bn-lex-office-326",
+        "bn-lex-opekkha-470"
+      ],
+      "mnemonic": "Written \"a\" in older books but said \"o\".",
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -641,7 +698,7 @@
       "kind": "consonant",
       "roman": "ṛ",
       "ipa": "ɽ",
-      "order": 33,
+      "order": 36,
       "introducedBy": [
         "bn-lex-bari-145",
         "bn-lex-boro-170",
@@ -655,30 +712,12 @@
       }
     },
     {
-      "id": "bn-0993",
-      "form": "ও",
-      "kind": "independent-vowel",
-      "roman": "o",
-      "ipa": "o",
-      "order": 34,
-      "introducedBy": [
-        "bn-lex-jao-320",
-        "bn-lex-ota-265",
-        "bn-lex-aro-104",
-        "bn-lex-chao-342"
-      ],
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
       "id": "bn-09a0",
       "form": "ঠ",
       "kind": "consonant",
       "roman": "ṭh",
       "ipa": "ʈʰ",
-      "order": 35,
+      "order": 37,
       "introducedBy": [
         "bn-lex-thik-98",
         "bn-lex-thanda-274",
@@ -696,7 +735,7 @@
       "kind": "consonant",
       "roman": "gh",
       "ipa": "gʱ",
-      "order": 36,
+      "order": 38,
       "introducedBy": [
         "bn-lex-ghonta-298",
         "bn-lex-ghor-162",
@@ -709,18 +748,18 @@
       }
     },
     {
-      "id": "bn-0985",
-      "form": "অ",
-      "kind": "independent-vowel",
-      "roman": "o",
-      "ipa": "ɔ",
-      "order": 37,
+      "id": "bn-09b7",
+      "form": "ষ",
+      "kind": "consonant",
+      "roman": "sh",
+      "ipa": "ʃ",
+      "order": 39,
       "introducedBy": [
-        "bn-lex-onek-48",
-        "bn-lex-odhikar-430",
-        "bn-lex-office-326"
+        "bn-lex-manush-65",
+        "bn-lex-shesh-144",
+        "bn-lex-niramish-720"
       ],
-      "mnemonic": "Written \"a\" in older books but said \"o\".",
+      "mnemonic": "Also \"sh\" — distinct in spelling only.",
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -732,7 +771,7 @@
       "kind": "independent-vowel",
       "roman": "u",
       "ipa": "u",
-      "order": 38,
+      "order": 40,
       "introducedBy": [
         "bn-lex-keu-134",
         "bn-lex-upore-186",
@@ -749,7 +788,7 @@
       "kind": "diacritic",
       "roman": "̃",
       "ipa": "̃",
-      "order": 39,
+      "order": 41,
       "introducedBy": [
         "bn-lex-h-275",
         "bn-lex-panch-158",
@@ -762,16 +801,16 @@
       }
     },
     {
-      "id": "bn-0982",
-      "form": "ং",
-      "kind": "diacritic",
-      "roman": "ng",
-      "ipa": "ŋ",
-      "order": 40,
+      "id": "bn-099d",
+      "form": "ঝ",
+      "kind": "consonant",
+      "roman": "jh",
+      "ipa": "dʒʱ",
+      "order": 42,
       "introducedBy": [
-        "bn-lex-bangla-205",
-        "bn-lex-mangsho-352",
-        "bn-lex-shongskriti-434"
+        "bn-lex-bujhte-314",
+        "bn-lex-jhal-520",
+        "bn-lex-bujhi-350"
       ],
       "provenance": {
         "status": "draft",
@@ -779,17 +818,17 @@
       }
     },
     {
-      "id": "bn-09b7",
-      "form": "ষ",
+      "id": "bn-09a1",
+      "form": "ড",
       "kind": "consonant",
-      "roman": "sh",
-      "ipa": "ʃ",
-      "order": 41,
+      "roman": "ḍ",
+      "ipa": "ɖ",
+      "order": 43,
       "introducedBy": [
-        "bn-lex-manush-65",
-        "bn-lex-shesh-144"
+        "bn-lex-dim-372",
+        "bn-lex-daktar-362",
+        "bn-lex-canada-1200"
       ],
-      "mnemonic": "Also \"sh\" — distinct in spelling only.",
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -801,7 +840,7 @@
       "kind": "consonant",
       "roman": "n",
       "ipa": "n",
-      "order": 42,
+      "order": 44,
       "introducedBy": [
         "bn-lex-karon-102",
         "bn-lex-uchcharon-640"
@@ -818,43 +857,12 @@
       "kind": "consonant",
       "roman": "ph",
       "ipa": "pʰ",
-      "order": 43,
+      "order": 45,
       "introducedBy": [
         "bn-lex-fol-338",
         "bn-lex-office-326"
       ],
       "mnemonic": "Often said like English f in Bangladesh.",
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
-      "id": "bn-09a1",
-      "form": "ড",
-      "kind": "consonant",
-      "roman": "ḍ",
-      "ipa": "ɖ",
-      "order": 44,
-      "introducedBy": [
-        "bn-lex-dim-372",
-        "bn-lex-daktar-362"
-      ],
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
-      "id": "bn-099d",
-      "form": "ঝ",
-      "kind": "consonant",
-      "roman": "jh",
-      "ipa": "dʒʱ",
-      "order": 45,
-      "introducedBy": [
-        "bn-lex-bujhte-314"
-      ],
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -877,6 +885,28 @@
       }
     },
     {
+      "id": "bn-09b7.09cd.099f",
+      "form": "ষ্ট",
+      "kind": "conjunct",
+      "roman": "ṣṭ",
+      "ipa": "ʃʈ",
+      "components": [
+        "bn-09b7",
+        "bn-099f"
+      ],
+      "order": 47,
+      "introducedBy": [
+        "bn-lex-spashto-448",
+        "bn-lex-chesta-345",
+        "bn-lex-teshta-640",
+        "bn-lex-jothesto-460"
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
       "id": "bn-0995.09cd.09b7",
       "form": "ক্ষ",
       "kind": "conjunct",
@@ -886,13 +916,36 @@
         "bn-0995",
         "bn-09b7"
       ],
-      "order": 47,
+      "order": 48,
       "introducedBy": [
         "bn-lex-khoma-620",
         "bn-lex-shikkhok-348",
-        "bn-lex-shikkharthi-460"
+        "bn-lex-shikkharthi-460",
+        "bn-lex-opekkha-470"
       ],
       "mnemonic": "ক + ষ, but said \"kkh\". Shape gives no hint.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-09b8.09cd.0995",
+      "form": "স্ক",
+      "kind": "conjunct",
+      "roman": "sk",
+      "ipa": "sk",
+      "components": [
+        "bn-09b8",
+        "bn-0995"
+      ],
+      "order": 49,
+      "introducedBy": [
+        "bn-lex-shkul-390",
+        "bn-lex-shongskriti-434",
+        "bn-lex-nomoshkar-540"
+      ],
+      "mnemonic": "One of the few places স is a true \"s\".",
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -908,7 +961,7 @@
         "bn-09a8",
         "bn-09af"
       ],
-      "order": 48,
+      "order": 50,
       "introducedBy": [
         "bn-lex-dhonnobad-420",
         "bn-lex-jonno-56"
@@ -929,7 +982,7 @@
         "bn-09a8",
         "bn-09a4"
       ],
-      "order": 49,
+      "order": 51,
       "introducedBy": [
         "bn-lex-kintu-68",
         "bn-lex-klanto-406"
@@ -949,10 +1002,30 @@
         "bn-09aa",
         "bn-09b0"
       ],
-      "order": 50,
+      "order": 52,
       "introducedBy": [
         "bn-lex-protidin-282",
         "bn-lex-proshno-256"
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-09b8.09cd.09a4",
+      "form": "স্ত",
+      "kind": "conjunct",
+      "roman": "st",
+      "ipa": "st̪",
+      "components": [
+        "bn-09b8",
+        "bn-09a4"
+      ],
+      "order": 53,
+      "introducedBy": [
+        "bn-lex-rasta-252",
+        "bn-lex-aste-415"
       ],
       "provenance": {
         "status": "draft",
@@ -969,33 +1042,12 @@
         "bn-09b8",
         "bn-09ac"
       ],
-      "order": 51,
+      "order": 54,
       "introducedBy": [
         "bn-lex-shami-328",
         "bn-lex-shadhinota-456"
       ],
       "mnemonic": "স + ব, but the ব is silent: স্বাধীনতা = \"shadhinota\".",
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
-      "id": "bn-09b8.09cd.0995",
-      "form": "স্ক",
-      "kind": "conjunct",
-      "roman": "sk",
-      "ipa": "sk",
-      "components": [
-        "bn-09b8",
-        "bn-0995"
-      ],
-      "order": 52,
-      "introducedBy": [
-        "bn-lex-shkul-390",
-        "bn-lex-shongskriti-434"
-      ],
-      "mnemonic": "One of the few places স is a true \"s\".",
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -1011,10 +1063,30 @@
         "bn-099a",
         "bn-099b"
       ],
-      "order": 53,
+      "order": 55,
       "introducedBy": [
         "bn-lex-achchha-360",
         "bn-lex-jachchhi-560"
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-09a4.09cd.09b0",
+      "form": "ত্র",
+      "kind": "conjunct",
+      "roman": "tr",
+      "ipa": "t̪r",
+      "components": [
+        "bn-09a4",
+        "bn-09b0"
+      ],
+      "order": 56,
+      "introducedBy": [
+        "bn-lex-chhatro-370",
+        "bn-lex-ratri-610"
       ],
       "provenance": {
         "status": "draft",
@@ -1031,7 +1103,7 @@
         "bn-09a7",
         "bn-09af"
       ],
-      "order": 54,
+      "order": 57,
       "introducedBy": [
         "bn-lex-moddhe-94"
       ],
@@ -1051,10 +1123,30 @@
         "bn-09a8",
         "bn-09a7"
       ],
-      "order": 55,
+      "order": 58,
       "introducedBy": [
         "bn-lex-bondhu-142"
       ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-09b8.09cd.09af",
+      "form": "স্য",
+      "kind": "conjunct",
+      "roman": "ss",
+      "ipa": "ss",
+      "components": [
+        "bn-09b8",
+        "bn-09af"
+      ],
+      "order": 59,
+      "introducedBy": [
+        "bn-lex-shomossha-218"
+      ],
+      "mnemonic": "স + য, said \"ss\" — সমস্যা is \"shomossha\".",
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -1070,7 +1162,7 @@
         "bn-0997",
         "bn-09b0"
       ],
-      "order": 56,
+      "order": 60,
       "introducedBy": [
         "bn-lex-gram-222"
       ],
@@ -1089,7 +1181,7 @@
         "bn-09a8",
         "bn-09a6"
       ],
-      "order": 57,
+      "order": 61,
       "introducedBy": [
         "bn-lex-shundor-225"
       ],
@@ -1108,30 +1200,11 @@
         "bn-09af",
         "bn-09af"
       ],
-      "order": 58,
+      "order": 62,
       "introducedBy": [
         "bn-lex-shahajjo-250"
       ],
       "mnemonic": "য + য, said \"jj\" — সাহায্য is \"shahajjo\".",
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
-      "id": "bn-09b8.09cd.09a4",
-      "form": "স্ত",
-      "kind": "conjunct",
-      "roman": "st",
-      "ipa": "st̪",
-      "components": [
-        "bn-09b8",
-        "bn-09a4"
-      ],
-      "order": 59,
-      "introducedBy": [
-        "bn-lex-rasta-252"
-      ],
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
@@ -1147,7 +1220,7 @@
         "bn-09b6",
         "bn-09a8"
       ],
-      "order": 60,
+      "order": 63,
       "introducedBy": [
         "bn-lex-proshno-256"
       ],
@@ -1166,7 +1239,7 @@
         "bn-09a8",
         "bn-09a1"
       ],
-      "order": 61,
+      "order": 64,
       "introducedBy": [
         "bn-lex-thanda-274"
       ],
@@ -1185,7 +1258,7 @@
         "bn-09b9",
         "bn-09af"
       ],
-      "order": 62,
+      "order": 65,
       "introducedBy": [
         "bn-lex-h-275"
       ],
@@ -1205,7 +1278,7 @@
         "bn-09ac",
         "bn-09af"
       ],
-      "order": 63,
+      "order": 66,
       "introducedBy": [
         "bn-lex-byabohar-276"
       ],
@@ -1225,7 +1298,7 @@
         "bn-09aa",
         "bn-09a4"
       ],
-      "order": 64,
+      "order": 67,
       "introducedBy": [
         "bn-lex-shoptaho-288"
       ],
@@ -1244,7 +1317,7 @@
         "bn-09a3",
         "bn-099f"
       ],
-      "order": 65,
+      "order": 68,
       "introducedBy": [
         "bn-lex-ghonta-298"
       ],
@@ -1264,7 +1337,7 @@
         "bn-09a4",
         "bn-09b0"
       ],
-      "order": 66,
+      "order": 69,
       "introducedBy": [
         "bn-lex-stri-322"
       ],
@@ -1285,7 +1358,7 @@
         "bn-09a7",
         "bn-09af"
       ],
-      "order": 67,
+      "order": 70,
       "introducedBy": [
         "bn-lex-shondha-355"
       ],
@@ -1305,7 +1378,7 @@
         "bn-0995",
         "bn-09a4"
       ],
-      "order": 68,
+      "order": 71,
       "introducedBy": [
         "bn-lex-daktar-362"
       ],
@@ -1324,28 +1397,9 @@
         "bn-09ae",
         "bn-09ac"
       ],
-      "order": 69,
+      "order": 72,
       "introducedBy": [
         "bn-lex-lomba-366"
-      ],
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
-      "id": "bn-09a4.09cd.09b0",
-      "form": "ত্র",
-      "kind": "conjunct",
-      "roman": "tr",
-      "ipa": "t̪r",
-      "components": [
-        "bn-09a4",
-        "bn-09b0"
-      ],
-      "order": 70,
-      "introducedBy": [
-        "bn-lex-chhatro-370"
       ],
       "provenance": {
         "status": "draft",
@@ -1362,7 +1416,7 @@
         "bn-0995",
         "bn-09b2"
       ],
-      "order": 71,
+      "order": 73,
       "introducedBy": [
         "bn-lex-klanto-406"
       ],
@@ -1381,26 +1435,7 @@
         "bn-09b8",
         "bn-09aa"
       ],
-      "order": 72,
-      "introducedBy": [
-        "bn-lex-spashto-448"
-      ],
-      "provenance": {
-        "status": "draft",
-        "source": "llm:claude"
-      }
-    },
-    {
-      "id": "bn-09b7.09cd.099f",
-      "form": "ষ্ট",
-      "kind": "conjunct",
-      "roman": "ṣṭ",
-      "ipa": "ʃʈ",
-      "components": [
-        "bn-09b7",
-        "bn-099f"
-      ],
-      "order": 73,
+      "order": 74,
       "introducedBy": [
         "bn-lex-spashto-448"
       ],
@@ -1419,7 +1454,7 @@
         "bn-099c",
         "bn-099e"
       ],
-      "order": 74,
+      "order": 75,
       "introducedBy": [
         "bn-lex-gyan-450"
       ],
@@ -1439,7 +1474,7 @@
         "bn-09b0",
         "bn-09a5"
       ],
-      "order": 75,
+      "order": 76,
       "introducedBy": [
         "bn-lex-shikkharthi-460"
       ],
@@ -1459,7 +1494,7 @@
         "bn-099a",
         "bn-099a"
       ],
-      "order": 76,
+      "order": 77,
       "introducedBy": [
         "bn-lex-uchcharon-640"
       ],
@@ -1478,7 +1513,7 @@
         "bn-09b6",
         "bn-09ac"
       ],
-      "order": 77,
+      "order": 78,
       "introducedBy": [
         "bn-lex-bishshobiddaloy-720"
       ],
@@ -1498,7 +1533,7 @@
         "bn-09a6",
         "bn-09af"
       ],
-      "order": 78,
+      "order": 79,
       "introducedBy": [
         "bn-lex-bishshobiddaloy-720"
       ],
@@ -6400,6 +6435,892 @@
         "status": "draft",
         "source": "llm:claude"
       }
+    },
+    {
+      "id": "bn-lex-opekkha-470",
+      "form": "অপেক্ষা",
+      "roman": "opekkha",
+      "gloss": [
+        "waiting"
+      ],
+      "pos": "noun",
+      "freqRank": 470,
+      "glyphs": [
+        "bn-0985",
+        "bn-09aa",
+        "bn-09c7",
+        "bn-0995.09cd.09b7",
+        "bn-09be"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-alaikum-900",
+      "form": "আলাইকুম",
+      "roman": "alaikum",
+      "gloss": [
+        "(part of the greeting)"
+      ],
+      "pos": "interj",
+      "freqRank": 900,
+      "glyphs": [
+        "bn-0986",
+        "bn-09b2",
+        "bn-09be",
+        "bn-0987",
+        "bn-0995",
+        "bn-09c1",
+        "bn-09ae"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-ashbo-330",
+      "form": "আসব",
+      "roman": "ashbo",
+      "gloss": [
+        "I will come"
+      ],
+      "pos": "verb",
+      "freqRank": 330,
+      "glyphs": [
+        "bn-0986",
+        "bn-09b8",
+        "bn-09ac"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-assalam-905",
+      "form": "আসসালাম",
+      "roman": "assalam",
+      "gloss": [
+        "(part of the greeting reply)"
+      ],
+      "pos": "interj",
+      "freqRank": 905,
+      "glyphs": [
+        "bn-0986",
+        "bn-09b8",
+        "bn-09be",
+        "bn-09b2",
+        "bn-09ae"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-assalamu-902",
+      "form": "আসসালামু",
+      "roman": "assalamu",
+      "gloss": [
+        "(part of the greeting)"
+      ],
+      "pos": "interj",
+      "freqRank": 902,
+      "glyphs": [
+        "bn-0986",
+        "bn-09b8",
+        "bn-09be",
+        "bn-09b2",
+        "bn-09ae",
+        "bn-09c1"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-aste-415",
+      "form": "আস্তে",
+      "roman": "aste",
+      "gloss": [
+        "slowly",
+        "gently"
+      ],
+      "pos": "adv",
+      "freqRank": 415,
+      "glyphs": [
+        "bn-0986",
+        "bn-09b8.09cd.09a4",
+        "bn-09c7"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-ingreji-375",
+      "form": "ইংরেজি",
+      "roman": "ingreji",
+      "gloss": [
+        "English"
+      ],
+      "pos": "noun",
+      "freqRank": 375,
+      "glyphs": [
+        "bn-0987",
+        "bn-0982",
+        "bn-09b0",
+        "bn-09c7",
+        "bn-099c",
+        "bn-09bf"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-eshechhi-425",
+      "form": "এসেছি",
+      "roman": "eshechhi",
+      "gloss": [
+        "I have come"
+      ],
+      "pos": "verb",
+      "freqRank": 425,
+      "glyphs": [
+        "bn-098f",
+        "bn-09b8",
+        "bn-09c7",
+        "bn-099b",
+        "bn-09bf"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-eshechhen-490",
+      "form": "এসেছেন",
+      "roman": "eshechhen",
+      "gloss": [
+        "you have come (polite)"
+      ],
+      "pos": "verb",
+      "freqRank": 490,
+      "glyphs": [
+        "bn-098f",
+        "bn-09b8",
+        "bn-09c7",
+        "bn-099b",
+        "bn-09a8"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-oyalaikum-908",
+      "form": "ওয়ালাইকুম",
+      "roman": "oyalaikum",
+      "gloss": [
+        "(part of the greeting reply)"
+      ],
+      "pos": "interj",
+      "freqRank": 908,
+      "glyphs": [
+        "bn-0993",
+        "bn-09af.09bc",
+        "bn-09be",
+        "bn-09b2",
+        "bn-0987",
+        "bn-0995",
+        "bn-09c1",
+        "bn-09ae"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-kom-176",
+      "form": "কম",
+      "roman": "kom",
+      "gloss": [
+        "less",
+        "fewer"
+      ],
+      "pos": "adj",
+      "freqRank": 176,
+      "glyphs": [
+        "bn-0995",
+        "bn-09ae"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-korchhi-260",
+      "form": "করছি",
+      "roman": "korchhi",
+      "gloss": [
+        "I am doing"
+      ],
+      "pos": "verb",
+      "freqRank": 260,
+      "glyphs": [
+        "bn-0995",
+        "bn-09b0",
+        "bn-099b",
+        "bn-09bf"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-korun-290",
+      "form": "করুন",
+      "roman": "korun",
+      "gloss": [
+        "please do (polite)"
+      ],
+      "pos": "verb",
+      "freqRank": 290,
+      "glyphs": [
+        "bn-0995",
+        "bn-09b0",
+        "bn-09c1",
+        "bn-09a8"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-canada-1200",
+      "form": "কানাডা",
+      "roman": "canada",
+      "gloss": [
+        "Canada"
+      ],
+      "pos": "noun",
+      "freqRank": 1200,
+      "glyphs": [
+        "bn-0995",
+        "bn-09be",
+        "bn-09a8",
+        "bn-09a1"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-kotha-320",
+      "form": "কোথা",
+      "roman": "kotha",
+      "gloss": [
+        "where (in phrases)"
+      ],
+      "pos": "adv",
+      "freqRank": 320,
+      "glyphs": [
+        "bn-0995",
+        "bn-09cb",
+        "bn-09a5",
+        "bn-09be"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-kono-136",
+      "form": "কোনো",
+      "roman": "kono",
+      "gloss": [
+        "any",
+        "some"
+      ],
+      "pos": "pron",
+      "freqRank": 136,
+      "glyphs": [
+        "bn-0995",
+        "bn-09cb",
+        "bn-09a8"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-khide-480",
+      "form": "খিদে",
+      "roman": "khide",
+      "gloss": [
+        "hunger"
+      ],
+      "pos": "noun",
+      "freqRank": 480,
+      "glyphs": [
+        "bn-0996",
+        "bn-09bf",
+        "bn-09a6",
+        "bn-09c7"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-gechhi-385",
+      "form": "গেছি",
+      "roman": "gechhi",
+      "gloss": [
+        "I have gone"
+      ],
+      "pos": "verb",
+      "freqRank": 385,
+      "glyphs": [
+        "bn-0997",
+        "bn-09c7",
+        "bn-099b",
+        "bn-09bf"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-chesta-345",
+      "form": "চেষ্টা",
+      "roman": "chesta",
+      "gloss": [
+        "effort",
+        "trying"
+      ],
+      "pos": "noun",
+      "freqRank": 345,
+      "glyphs": [
+        "bn-099a",
+        "bn-09c7",
+        "bn-09b7.09cd.099f",
+        "bn-09be"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-janen-280",
+      "form": "জানেন",
+      "roman": "janen",
+      "gloss": [
+        "you know (polite)"
+      ],
+      "pos": "verb",
+      "freqRank": 280,
+      "glyphs": [
+        "bn-099c",
+        "bn-09be",
+        "bn-09a8",
+        "bn-09c7"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-jhal-520",
+      "form": "ঝাল",
+      "roman": "jhal",
+      "gloss": [
+        "chilli heat",
+        "spicy"
+      ],
+      "pos": "adj",
+      "freqRank": 520,
+      "glyphs": [
+        "bn-099d",
+        "bn-09be",
+        "bn-09b2"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-toilet-560",
+      "form": "টয়লেট",
+      "roman": "toilet",
+      "gloss": [
+        "toilet"
+      ],
+      "pos": "noun",
+      "freqRank": 560,
+      "glyphs": [
+        "bn-099f",
+        "bn-09af.09bc",
+        "bn-09b2",
+        "bn-09c7"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-teshta-640",
+      "form": "তেষ্টা",
+      "roman": "teshta",
+      "gloss": [
+        "thirst"
+      ],
+      "pos": "noun",
+      "freqRank": 640,
+      "glyphs": [
+        "bn-09a4",
+        "bn-09c7",
+        "bn-09b7.09cd.099f",
+        "bn-09be"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-thakben-430",
+      "form": "থাকবেন",
+      "roman": "thakben",
+      "gloss": [
+        "you will stay (polite)"
+      ],
+      "pos": "verb",
+      "freqRank": 430,
+      "glyphs": [
+        "bn-09a5",
+        "bn-09be",
+        "bn-0995",
+        "bn-09ac",
+        "bn-09c7",
+        "bn-09a8"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-dam-310",
+      "form": "দাম",
+      "roman": "dam",
+      "gloss": [
+        "price"
+      ],
+      "pos": "noun",
+      "freqRank": 310,
+      "glyphs": [
+        "bn-09a6",
+        "bn-09be",
+        "bn-09ae"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-dekha-214",
+      "form": "দেখা",
+      "roman": "dekha",
+      "gloss": [
+        "meeting",
+        "seeing"
+      ],
+      "pos": "noun",
+      "freqRank": 214,
+      "glyphs": [
+        "bn-09a6",
+        "bn-09c7",
+        "bn-0996",
+        "bn-09be"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-nomoshkar-540",
+      "form": "নমস্কার",
+      "roman": "nomoshkar",
+      "gloss": [
+        "hello (Hindu greeting)"
+      ],
+      "pos": "interj",
+      "freqRank": 540,
+      "glyphs": [
+        "bn-09a8",
+        "bn-09ae",
+        "bn-09b8.09cd.0995",
+        "bn-09be",
+        "bn-09b0"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-niramish-720",
+      "form": "নিরামিষ",
+      "roman": "niramish",
+      "gloss": [
+        "vegetarian"
+      ],
+      "pos": "adj",
+      "freqRank": 720,
+      "glyphs": [
+        "bn-09a8",
+        "bn-09bf",
+        "bn-09b0",
+        "bn-09be",
+        "bn-09ae",
+        "bn-09b7"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-nebo-400",
+      "form": "নেব",
+      "roman": "nebo",
+      "gloss": [
+        "I will take"
+      ],
+      "pos": "verb",
+      "freqRank": 400,
+      "glyphs": [
+        "bn-09a8",
+        "bn-09c7",
+        "bn-09ac"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-peyechhe-270",
+      "form": "পেয়েছে",
+      "roman": "peyechhe",
+      "gloss": [
+        "has got",
+        "has received"
+      ],
+      "pos": "verb",
+      "freqRank": 270,
+      "glyphs": [
+        "bn-09aa",
+        "bn-09c7",
+        "bn-09af.09bc",
+        "bn-099b"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-bolun-300",
+      "form": "বলুন",
+      "roman": "bolun",
+      "gloss": [
+        "please say (polite)"
+      ],
+      "pos": "verb",
+      "freqRank": 300,
+      "glyphs": [
+        "bn-09ac",
+        "bn-09b2",
+        "bn-09c1",
+        "bn-09a8"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-bangladesh-240",
+      "form": "বাংলাদেশ",
+      "roman": "bangladesh",
+      "gloss": [
+        "Bangladesh"
+      ],
+      "pos": "noun",
+      "freqRank": 240,
+      "glyphs": [
+        "bn-09ac",
+        "bn-09be",
+        "bn-0982",
+        "bn-09b2",
+        "bn-09a6",
+        "bn-09c7",
+        "bn-09b6"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-bujhi-350",
+      "form": "বুঝি",
+      "roman": "bujhi",
+      "gloss": [
+        "I understand"
+      ],
+      "pos": "verb",
+      "freqRank": 350,
+      "glyphs": [
+        "bn-09ac",
+        "bn-09c1",
+        "bn-099d",
+        "bn-09bf"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-moja-365",
+      "form": "মজা",
+      "roman": "moja",
+      "gloss": [
+        "fun",
+        "tasty"
+      ],
+      "pos": "adj",
+      "freqRank": 365,
+      "glyphs": [
+        "bn-09ae",
+        "bn-099c",
+        "bn-09be"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-jothesto-460",
+      "form": "যথেষ্ট",
+      "roman": "jothesto",
+      "gloss": [
+        "enough"
+      ],
+      "pos": "adj",
+      "freqRank": 460,
+      "glyphs": [
+        "bn-09af",
+        "bn-09a5",
+        "bn-09c7",
+        "bn-09b7.09cd.099f"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-ratri-610",
+      "form": "রাত্রি",
+      "roman": "ratri",
+      "gloss": [
+        "night (formal)"
+      ],
+      "pos": "noun",
+      "freqRank": 610,
+      "glyphs": [
+        "bn-09b0",
+        "bn-09be",
+        "bn-09a4.09cd.09b0",
+        "bn-09bf"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-laglo-335",
+      "form": "লাগল",
+      "roman": "laglo",
+      "gloss": [
+        "it felt",
+        "it seemed"
+      ],
+      "pos": "verb",
+      "freqRank": 335,
+      "glyphs": [
+        "bn-09b2",
+        "bn-09be",
+        "bn-0997"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-shubho-405",
+      "form": "শুভ",
+      "roman": "shubho",
+      "gloss": [
+        "good",
+        "auspicious"
+      ],
+      "pos": "adj",
+      "freqRank": 405,
+      "glyphs": [
+        "bn-09b6",
+        "bn-09c1",
+        "bn-09ad"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-shomossha-218",
+      "form": "সমস্যা",
+      "roman": "shomossha",
+      "gloss": [
+        "problem"
+      ],
+      "pos": "noun",
+      "freqRank": 218,
+      "glyphs": [
+        "bn-09b8",
+        "bn-09ae",
+        "bn-09b8.09cd.09af",
+        "bn-09be"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-hoyechhe-150",
+      "form": "হয়েছে",
+      "roman": "hoyechhe",
+      "gloss": [
+        "has happened",
+        "has become"
+      ],
+      "pos": "verb",
+      "freqRank": 150,
+      "glyphs": [
+        "bn-09b9",
+        "bn-09af.09bc",
+        "bn-09c7",
+        "bn-099b"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-lex-hariye-580",
+      "form": "হারিয়ে",
+      "roman": "hariye",
+      "gloss": [
+        "having lost"
+      ],
+      "pos": "verb",
+      "freqRank": 580,
+      "glyphs": [
+        "bn-09b9",
+        "bn-09be",
+        "bn-09b0",
+        "bn-09bf",
+        "bn-09af.09bc",
+        "bn-09c7"
+      ],
+      "register": "cholito",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
     }
   ],
   "sentences": [
@@ -10333,6 +11254,1230 @@
         }
       ],
       "level": 5,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-106",
+      "form": "আসসালামু আলাইকুম।",
+      "roman": "assalamu alaikum.",
+      "gloss": "Hello. (Muslim greeting, Bangladesh)",
+      "lexemes": [
+        "bn-lex-assalamu-902",
+        "bn-lex-alaikum-900"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-assalamu-902",
+          "start": 0,
+          "end": 8
+        },
+        {
+          "lexeme": "bn-lex-alaikum-900",
+          "start": 9,
+          "end": 16
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-107",
+      "form": "ওয়ালাইকুম আসসালাম।",
+      "roman": "oyalaikum assalam.",
+      "gloss": "And peace be upon you. (the reply)",
+      "lexemes": [
+        "bn-lex-oyalaikum-908",
+        "bn-lex-assalam-905"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-oyalaikum-908",
+          "start": 0,
+          "end": 10
+        },
+        {
+          "lexeme": "bn-lex-assalam-905",
+          "start": 11,
+          "end": 18
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-108",
+      "form": "নমস্কার।",
+      "roman": "nomoshkar.",
+      "gloss": "Hello. (Hindu greeting)",
+      "lexemes": [
+        "bn-lex-nomoshkar-540"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-nomoshkar-540",
+          "start": 0,
+          "end": 7
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-109",
+      "form": "আমার নাম কী?",
+      "roman": "amar nam ki?",
+      "gloss": "What is my name?",
+      "lexemes": [
+        "bn-lex-amar-25",
+        "bn-lex-nam-100",
+        "bn-lex-ki-95"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-amar-25",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-nam-100",
+          "start": 5,
+          "end": 8
+        },
+        {
+          "lexeme": "bn-lex-ki-95",
+          "start": 9,
+          "end": 11
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-110",
+      "form": "আপনার নাম কী?",
+      "roman": "apnar nam ki?",
+      "gloss": "What is your name? (polite)",
+      "lexemes": [
+        "bn-lex-apnar-260",
+        "bn-lex-nam-100",
+        "bn-lex-ki-95"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-apnar-260",
+          "start": 0,
+          "end": 5
+        },
+        {
+          "lexeme": "bn-lex-nam-100",
+          "start": 6,
+          "end": 9
+        },
+        {
+          "lexeme": "bn-lex-ki-95",
+          "start": 10,
+          "end": 12
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-111",
+      "form": "আমি বুঝি না।",
+      "roman": "ami bujhi na.",
+      "gloss": "I do not understand.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-bujhi-350",
+        "bn-lex-na-10"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-bujhi-350",
+          "start": 4,
+          "end": 8
+        },
+        {
+          "lexeme": "bn-lex-na-10",
+          "start": 9,
+          "end": 11
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-112",
+      "form": "আবার বলুন।",
+      "roman": "abar bolun.",
+      "gloss": "Say that again. (polite)",
+      "lexemes": [
+        "bn-lex-abar-106",
+        "bn-lex-bolun-300"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-abar-106",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-bolun-300",
+          "start": 5,
+          "end": 9
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-113",
+      "form": "আস্তে বলুন।",
+      "roman": "aste bolun.",
+      "gloss": "Please speak slowly.",
+      "lexemes": [
+        "bn-lex-aste-415",
+        "bn-lex-bolun-300"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-aste-415",
+          "start": 0,
+          "end": 5
+        },
+        {
+          "lexeme": "bn-lex-bolun-300",
+          "start": 6,
+          "end": 10
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-114",
+      "form": "আমি একটু বাংলা জানি।",
+      "roman": "ami ektu bangla jani.",
+      "gloss": "I know a little Bangla.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-ektu-235",
+        "bn-lex-bangla-205",
+        "bn-lex-jani-220"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-ektu-235",
+          "start": 4,
+          "end": 8
+        },
+        {
+          "lexeme": "bn-lex-bangla-205",
+          "start": 9,
+          "end": 14
+        },
+        {
+          "lexeme": "bn-lex-jani-220",
+          "start": 15,
+          "end": 19
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-115",
+      "form": "ইংরেজি জানেন?",
+      "roman": "ingreji janen?",
+      "gloss": "Do you speak English?",
+      "lexemes": [
+        "bn-lex-ingreji-375",
+        "bn-lex-janen-280"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ingreji-375",
+          "start": 0,
+          "end": 6
+        },
+        {
+          "lexeme": "bn-lex-janen-280",
+          "start": 7,
+          "end": 12
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-116",
+      "form": "এটা কত?",
+      "roman": "eta koto?",
+      "gloss": "How much is this?",
+      "lexemes": [
+        "bn-lex-eta-88",
+        "bn-lex-koto-165"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-eta-88",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-koto-165",
+          "start": 4,
+          "end": 6
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-117",
+      "form": "খুব দাম।",
+      "roman": "khub dam.",
+      "gloss": "That is expensive.",
+      "lexemes": [
+        "bn-lex-khub-80",
+        "bn-lex-dam-310"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-khub-80",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-dam-310",
+          "start": 4,
+          "end": 7
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-118",
+      "form": "একটু কম হবে?",
+      "roman": "ektu kom hobe?",
+      "gloss": "Could it be a bit less?",
+      "lexemes": [
+        "bn-lex-ektu-235",
+        "bn-lex-kom-176",
+        "bn-lex-hobe-58"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ektu-235",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-kom-176",
+          "start": 5,
+          "end": 7
+        },
+        {
+          "lexeme": "bn-lex-hobe-58",
+          "start": 8,
+          "end": 11
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-119",
+      "form": "আমি এটা নেব।",
+      "roman": "ami eta nebo.",
+      "gloss": "I will take this.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-eta-88",
+        "bn-lex-nebo-400"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-eta-88",
+          "start": 4,
+          "end": 7
+        },
+        {
+          "lexeme": "bn-lex-nebo-400",
+          "start": 8,
+          "end": 11
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-120",
+      "form": "টয়লেট কোথায়?",
+      "roman": "toilet kothay?",
+      "gloss": "Where is the toilet?",
+      "lexemes": [
+        "bn-lex-toilet-560",
+        "bn-lex-kothay-240"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-toilet-560",
+          "start": 0,
+          "end": 6
+        },
+        {
+          "lexeme": "bn-lex-kothay-240",
+          "start": 7,
+          "end": 13
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-121",
+      "form": "একটু সাহায্য করবেন?",
+      "roman": "ektu shahajjo korben?",
+      "gloss": "Could you help me a moment?",
+      "lexemes": [
+        "bn-lex-ektu-235",
+        "bn-lex-shahajjo-250",
+        "bn-lex-korben-480"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ektu-235",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-shahajjo-250",
+          "start": 5,
+          "end": 12
+        },
+        {
+          "lexeme": "bn-lex-korben-480",
+          "start": 13,
+          "end": 18
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-122",
+      "form": "আমি হারিয়ে গেছি।",
+      "roman": "ami hariye gechhi.",
+      "gloss": "I am lost.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-hariye-580",
+        "bn-lex-gechhi-385"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-hariye-580",
+          "start": 4,
+          "end": 11
+        },
+        {
+          "lexeme": "bn-lex-gechhi-385",
+          "start": 12,
+          "end": 16
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-123",
+      "form": "আমার খিদে পেয়েছে।",
+      "roman": "amar khide peyechhe.",
+      "gloss": "I am hungry.",
+      "lexemes": [
+        "bn-lex-amar-25",
+        "bn-lex-khide-480",
+        "bn-lex-peyechhe-270"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-amar-25",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-khide-480",
+          "start": 5,
+          "end": 9
+        },
+        {
+          "lexeme": "bn-lex-peyechhe-270",
+          "start": 10,
+          "end": 17
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-124",
+      "form": "আমার তেষ্টা পেয়েছে।",
+      "roman": "amar teshta peyechhe.",
+      "gloss": "I am thirsty.",
+      "lexemes": [
+        "bn-lex-amar-25",
+        "bn-lex-teshta-640",
+        "bn-lex-peyechhe-270"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-amar-25",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-teshta-640",
+          "start": 5,
+          "end": 11
+        },
+        {
+          "lexeme": "bn-lex-peyechhe-270",
+          "start": 12,
+          "end": 19
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-125",
+      "form": "এটা খুব মজা।",
+      "roman": "eta khub moja.",
+      "gloss": "This is delicious.",
+      "lexemes": [
+        "bn-lex-eta-88",
+        "bn-lex-khub-80",
+        "bn-lex-moja-365"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-eta-88",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-khub-80",
+          "start": 4,
+          "end": 7
+        },
+        {
+          "lexeme": "bn-lex-moja-365",
+          "start": 8,
+          "end": 11
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-126",
+      "form": "আর একটু দিন।",
+      "roman": "ar ektu din.",
+      "gloss": "A little more, please.",
+      "lexemes": [
+        "bn-lex-ar-22",
+        "bn-lex-ektu-235",
+        "bn-lex-din-85"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ar-22",
+          "start": 0,
+          "end": 2
+        },
+        {
+          "lexeme": "bn-lex-ektu-235",
+          "start": 3,
+          "end": 7
+        },
+        {
+          "lexeme": "bn-lex-din-85",
+          "start": 8,
+          "end": 11
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-127",
+      "form": "যথেষ্ট হয়েছে।",
+      "roman": "jothesto hoyechhe.",
+      "gloss": "That is enough.",
+      "lexemes": [
+        "bn-lex-jothesto-460",
+        "bn-lex-hoyechhe-150"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-jothesto-460",
+          "start": 0,
+          "end": 6
+        },
+        {
+          "lexeme": "bn-lex-hoyechhe-150",
+          "start": 7,
+          "end": 13
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-128",
+      "form": "আমি নিরামিষ খাই।",
+      "roman": "ami niramish khai.",
+      "gloss": "I eat vegetarian food.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-niramish-720",
+        "bn-lex-khai-340"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-niramish-720",
+          "start": 4,
+          "end": 11
+        },
+        {
+          "lexeme": "bn-lex-khai-340",
+          "start": 12,
+          "end": 15
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-129",
+      "form": "ঝাল কম দিন।",
+      "roman": "jhal kom din.",
+      "gloss": "Less chilli, please.",
+      "lexemes": [
+        "bn-lex-jhal-520",
+        "bn-lex-kom-176",
+        "bn-lex-din-85"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-jhal-520",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-kom-176",
+          "start": 4,
+          "end": 6
+        },
+        {
+          "lexeme": "bn-lex-din-85",
+          "start": 7,
+          "end": 10
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-130",
+      "form": "দেখা হবে।",
+      "roman": "dekha hobe.",
+      "gloss": "See you.",
+      "lexemes": [
+        "bn-lex-dekha-214",
+        "bn-lex-hobe-58"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-dekha-214",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-hobe-58",
+          "start": 5,
+          "end": 8
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-131",
+      "form": "ভালো থাকবেন।",
+      "roman": "bhalo thakben.",
+      "gloss": "Take care. (polite)",
+      "lexemes": [
+        "bn-lex-bhalo-50",
+        "bn-lex-thakben-430"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-bhalo-50",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-thakben-430",
+          "start": 5,
+          "end": 11
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-132",
+      "form": "শুভ রাত্রি।",
+      "roman": "shubho ratri.",
+      "gloss": "Good night.",
+      "lexemes": [
+        "bn-lex-shubho-405",
+        "bn-lex-ratri-610"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-shubho-405",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-ratri-610",
+          "start": 4,
+          "end": 10
+        }
+      ],
+      "level": 1,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-133",
+      "form": "কিছু মনে করবেন না।",
+      "roman": "kichhu mone korben na.",
+      "gloss": "Please do not mind. / No offence.",
+      "lexemes": [
+        "bn-lex-kichhu-78",
+        "bn-lex-mon-122",
+        "bn-lex-korben-480",
+        "bn-lex-na-10"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-kichhu-78",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-mon-122",
+          "start": 5,
+          "end": 8
+        },
+        {
+          "lexeme": "bn-lex-korben-480",
+          "start": 9,
+          "end": 14
+        },
+        {
+          "lexeme": "bn-lex-na-10",
+          "start": 15,
+          "end": 17
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-134",
+      "form": "কোনো সমস্যা নেই।",
+      "roman": "kono shomossha nei.",
+      "gloss": "No problem.",
+      "lexemes": [
+        "bn-lex-kono-136",
+        "bn-lex-shomossha-218",
+        "bn-lex-nei-54"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-kono-136",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-shomossha-218",
+          "start": 5,
+          "end": 11
+        },
+        {
+          "lexeme": "bn-lex-nei-54",
+          "start": 12,
+          "end": 15
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-135",
+      "form": "আমি চেষ্টা করছি।",
+      "roman": "ami chesta korchhi.",
+      "gloss": "I am trying.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-chesta-345",
+        "bn-lex-korchhi-260"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-chesta-345",
+          "start": 4,
+          "end": 10
+        },
+        {
+          "lexeme": "bn-lex-korchhi-260",
+          "start": 11,
+          "end": 15
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-136",
+      "form": "আপনি কোথা থেকে এসেছেন?",
+      "roman": "apni kotha theke eshechhen?",
+      "gloss": "Where are you from?",
+      "lexemes": [
+        "bn-lex-apni-120",
+        "bn-lex-kotha-320",
+        "bn-lex-theke-46",
+        "bn-lex-eshechhen-490"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-apni-120",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-kotha-320",
+          "start": 5,
+          "end": 9
+        },
+        {
+          "lexeme": "bn-lex-theke-46",
+          "start": 10,
+          "end": 14
+        },
+        {
+          "lexeme": "bn-lex-eshechhen-490",
+          "start": 15,
+          "end": 21
+        }
+      ],
+      "level": 4,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-137",
+      "form": "আমি কানাডা থেকে এসেছি।",
+      "roman": "ami canada theke eshechhi.",
+      "gloss": "I am from Canada.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-canada-1200",
+        "bn-lex-theke-46",
+        "bn-lex-eshechhi-425"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-canada-1200",
+          "start": 4,
+          "end": 10
+        },
+        {
+          "lexeme": "bn-lex-theke-46",
+          "start": 11,
+          "end": 15
+        },
+        {
+          "lexeme": "bn-lex-eshechhi-425",
+          "start": 16,
+          "end": 21
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-138",
+      "form": "আমার পরিবার বাংলাদেশ থেকে।",
+      "roman": "amar poribar bangladesh theke.",
+      "gloss": "My family is from Bangladesh.",
+      "lexemes": [
+        "bn-lex-amar-25",
+        "bn-lex-poribar-212",
+        "bn-lex-bangladesh-240",
+        "bn-lex-theke-46"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-amar-25",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-poribar-212",
+          "start": 5,
+          "end": 11
+        },
+        {
+          "lexeme": "bn-lex-bangladesh-240",
+          "start": 12,
+          "end": 20
+        },
+        {
+          "lexeme": "bn-lex-theke-46",
+          "start": 21,
+          "end": 25
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-139",
+      "form": "আমি বাংলা শিখতে চাই।",
+      "roman": "ami bangla shikhte chai.",
+      "gloss": "I want to learn Bangla.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-bangla-205",
+        "bn-lex-shikhte-640",
+        "bn-lex-chai-250"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-bangla-205",
+          "start": 4,
+          "end": 9
+        },
+        {
+          "lexeme": "bn-lex-shikhte-640",
+          "start": 10,
+          "end": 15
+        },
+        {
+          "lexeme": "bn-lex-chai-250",
+          "start": 16,
+          "end": 19
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-140",
+      "form": "আপনার সাথে কথা বলে ভালো লাগল।",
+      "roman": "apnar shathe kotha bole bhalo laglo.",
+      "gloss": "It was nice talking with you.",
+      "lexemes": [
+        "bn-lex-apnar-260",
+        "bn-lex-shathe-66",
+        "bn-lex-kotha-60",
+        "bn-lex-bole-45",
+        "bn-lex-bhalo-50",
+        "bn-lex-laglo-335"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-apnar-260",
+          "start": 0,
+          "end": 5
+        },
+        {
+          "lexeme": "bn-lex-shathe-66",
+          "start": 6,
+          "end": 10
+        },
+        {
+          "lexeme": "bn-lex-kotha-60",
+          "start": 11,
+          "end": 14
+        },
+        {
+          "lexeme": "bn-lex-bole-45",
+          "start": 15,
+          "end": 18
+        },
+        {
+          "lexeme": "bn-lex-bhalo-50",
+          "start": 19,
+          "end": 23
+        },
+        {
+          "lexeme": "bn-lex-laglo-335",
+          "start": 24,
+          "end": 28
+        }
+      ],
+      "level": 4,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-141",
+      "form": "একটু অপেক্ষা করুন।",
+      "roman": "ektu opekkha korun.",
+      "gloss": "Please wait a moment.",
+      "lexemes": [
+        "bn-lex-ektu-235",
+        "bn-lex-opekkha-470",
+        "bn-lex-korun-290"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ektu-235",
+          "start": 0,
+          "end": 4
+        },
+        {
+          "lexeme": "bn-lex-opekkha-470",
+          "start": 5,
+          "end": 12
+        },
+        {
+          "lexeme": "bn-lex-korun-290",
+          "start": 13,
+          "end": 17
+        }
+      ],
+      "level": 3,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-142",
+      "form": "আমি পরে আসব।",
+      "roman": "ami pore ashbo.",
+      "gloss": "I will come later.",
+      "lexemes": [
+        "bn-lex-ami-12",
+        "bn-lex-pore-118",
+        "bn-lex-ashbo-330"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-ami-12",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-pore-118",
+          "start": 4,
+          "end": 7
+        },
+        {
+          "lexeme": "bn-lex-ashbo-330",
+          "start": 8,
+          "end": 11
+        }
+      ],
+      "level": 2,
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-sent-143",
+      "form": "ঠিক আছে, ধন্যবাদ।",
+      "roman": "thik achhe, dhonnobad.",
+      "gloss": "All right, thank you.",
+      "lexemes": [
+        "bn-lex-thik-98",
+        "bn-lex-achhe-20",
+        "bn-lex-dhonnobad-420"
+      ],
+      "spans": [
+        {
+          "lexeme": "bn-lex-thik-98",
+          "start": 0,
+          "end": 3
+        },
+        {
+          "lexeme": "bn-lex-achhe-20",
+          "start": 4,
+          "end": 7
+        },
+        {
+          "lexeme": "bn-lex-dhonnobad-420",
+          "start": 9,
+          "end": 16
+        }
+      ],
+      "level": 1,
       "provenance": {
         "status": "draft",
         "source": "llm:claude"

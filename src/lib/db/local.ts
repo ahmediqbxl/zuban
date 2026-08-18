@@ -183,7 +183,12 @@ export async function saveProfile(p: StoredProfile): Promise<void> {
   await (await db()).put('profile', {
     id: 'me',
     course: p.course,
-    track: { script: p.track.script, listening: p.track.listening, production: p.track.production },
+    track: {
+      script: p.track.script,
+      listening: p.track.listening,
+      production: p.track.production,
+      speech: p.track.speech
+    },
     placement: p.placement
       ? { listening: p.placement.listening, script: p.placement.script, label: p.placement.label }
       : undefined,

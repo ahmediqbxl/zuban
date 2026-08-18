@@ -161,70 +161,145 @@ describe('scheduler', () => {
 describe('teaching curve', () => {
   /**
    * Walk the whole course the way a learner would and assert the shape of
-   * the trajectory. These guard a balance that is easy to break: weight
+   * the trajectory. These guard balances that are easy to break: weight
    * letters too heavily and the course becomes the alphabet chart it was
-   * designed to avoid; too lightly and the script never gets taught.
+   * designed to avoid; too lightly and the script never gets taught; boost
+   * sentences too little and a speaking learner grinds 236 isolated words
+   * before their first phrase.
    */
-  function walk() {
+  function walk(track = TRACKS.both) {
     const known = emptyKnowledge();
-    const trace: Array<{ step: number; glyphs: number; lexemes: number; sentences: number }> = [];
+    const trace: Array<{ glyphs: number; lexemes: number; sentences: number }> = [];
     let steps = 0;
     let strict = 0;
+    let firstSentence = 0;
+    let unreadable = 0;
+
     for (;;) {
-      const strictC = candidates(graph, known, TRACKS.both, 1);
-      const next = strictC.length > 0 ? strictC[0] : nextItem(graph, known, TRACKS.both);
+      const strictC = candidates(graph, known, track, 1);
+      const next = strictC.length > 0 ? strictC[0] : nextItem(graph, known, track);
       if (!next) break;
       if (strictC.length > 0) strict++;
       steps++;
       if (steps > 2000) throw new Error('did not terminate');
+
+      // A script learner must be able to read every sentence they are shown.
+      if (next.tier === 'sentence' && track.script) {
+        const sent = graph.sentences.get(next.id)!;
+        const unknownGlyphs = sent.lexemes
+          .flatMap((l) => graph.lexemes.get(l)?.glyphs ?? [])
+          .filter((g) => !known.glyphs.has(g));
+        if (unknownGlyphs.length > 1) unreadable++;
+      }
+
       if (next.tier === 'glyph') known.glyphs.add(next.id);
-      else if (next.tier === 'lexeme') known.lexemes.add(next.id);
-      else known.sentences.add(next.id);
+      else if (next.tier === 'lexeme') {
+        known.lexemes.add(next.id);
+        // Mirrors the app: learning a word credits the letters it
+        // introduced, which is what makes teach-in-context advance.
+        if (track.script) {
+          for (const g of graph.lexemes.get(next.id)!.glyphs) known.glyphs.add(g);
+        }
+      } else {
+        known.sentences.add(next.id);
+        if (!firstSentence) firstSentence = steps;
+      }
       trace.push({
-        step: steps,
         glyphs: known.glyphs.size,
         lexemes: known.lexemes.size,
         sentences: known.sentences.size
       });
     }
-    return { known, trace, steps, strict };
+    return { known, trace, steps, strict, firstSentence, unreadable };
   }
 
-  const { known, trace, steps, strict } = walk();
-  const at = (n: number) => trace[Math.min(n, trace.length) - 1];
+  describe('script track', () => {
+    const r = walk(TRACKS.both);
+    const at = (n: number) => r.trace[Math.min(n, r.trace.length) - 1];
 
-  it('never teaches a word containing an untaught letter', () => {
-    // The core invariant. If this breaks, learners meet script they were
-    // never shown and the whole i+1 claim is false.
-    for (const id of known.lexemes) {
-      const lex = graph.lexemes.get(id)!;
-      for (const g of lex.glyphs) expect(known.glyphs, lex.form).toContain(g);
-    }
+    it('never shows a sentence the learner cannot read', () => {
+      // Regression: one-word sentences qualified at step one, rendered in
+      // an alphabet the learner had not started.
+      expect(r.unreadable).toBe(0);
+    });
+
+    it('never teaches a word containing an untaught letter', () => {
+      for (const id of r.known.lexemes) {
+        const lex = graph.lexemes.get(id)!;
+        for (const g of lex.glyphs) expect(r.known.glyphs, lex.form).toContain(g);
+      }
+    });
+
+    it('offers a strict i+1 item at every step', () => {
+      expect(r.strict).toBe(r.steps);
+    });
+
+    it('reaches real words within the first handful of items', () => {
+      expect(at(10).lexemes).toBeGreaterThan(0);
+    });
+
+    it('reaches real sentences early, not after the alphabet', () => {
+      expect(r.firstSentence).toBeGreaterThan(0);
+      expect(r.firstSentence).toBeLessThan(40);
+    });
+
+    it('interleaves rather than front-loading letters', () => {
+      const p = at(50);
+      expect(p.lexemes).toBeGreaterThan(p.glyphs * 2);
+    });
+
+    it('teaches the whole script by the end', () => {
+      expect(r.known.glyphs.size).toBe(bn.glyphs.length);
+    });
   });
 
-  it('offers a strict i+1 item at every step', () => {
-    // Needing to widen the budget means the graph is too sparse.
-    expect(strict).toBe(steps);
-  });
+  describe('speaking track', () => {
+    const r = walk(TRACKS.speaking);
+    const at = (n: number) => r.trace[Math.min(n, r.trace.length) - 1];
 
-  it('reaches real words within the first handful of items', () => {
-    expect(at(10).lexemes).toBeGreaterThan(0);
-  });
+    it('teaches no script at all', () => {
+      // The whole point: someone who does not want to read should never be
+      // shown a letter card.
+      expect(r.known.glyphs.size).toBe(0);
+    });
 
-  it('reaches real sentences early, not after the alphabet', () => {
-    // The failure this guards: letters scored too heavily, so the learner
-    // grinds the script before ever seeing a sentence.
-    expect(at(30).sentences).toBeGreaterThan(0);
-  });
+    it('still covers every word and sentence', () => {
+      expect(r.known.lexemes.size).toBe(bn.lexemes.length);
+      expect(r.known.sentences.size).toBe(bn.sentences.length);
+    });
 
-  it('interleaves rather than front-loading letters', () => {
-    // At 50 items a learner should have far more words than letters.
-    const p = at(50);
-    expect(p.lexemes).toBeGreaterThan(p.glyphs * 3);
-  });
+    it('reaches usable phrases quickly', () => {
+      // Regression: sentences scored below words, so a speaking learner
+      // met all 236 words before their first phrase.
+      expect(r.firstSentence).toBeGreaterThan(0);
+      expect(r.firstSentence).toBeLessThan(30);
+    });
 
-  it('still teaches the whole script by the end', () => {
-    expect(known.glyphs.size).toBe(bn.glyphs.length);
+    it('builds comprehension faster than the script track', () => {
+      // No letters to learn means vocabulary accumulates sooner.
+      expect(at(25).lexemes).toBeGreaterThan(15);
+    });
+
+    it('plans only script-free exercises', () => {
+      const kinds = new Set<string>();
+      for (const c of candidates(graph, emptyKnowledge(), TRACKS.speaking, 3)) {
+        for (const k of c.exercises) kinds.add(k);
+      }
+      for (const banned of ['glyph-sound', 'glyph-find', 'word-read', 'word-spell', 'cloze']) {
+        expect(kinds, banned).not.toContain(banned);
+      }
+      expect(kinds).toContain('say-word');
+      expect(kinds).toContain('word-recall');
+    });
+
+    it('offers spoken production for both words and sentences', () => {
+      const all = candidates(graph, emptyKnowledge(), TRACKS.speaking, 3);
+      expect(all.some((c) => c.exercises.includes('say-word'))).toBe(true);
+      const known = emptyKnowledge();
+      for (const l of bn.lexemes) known.lexemes.add(l.id);
+      const withSentences = candidates(graph, known, TRACKS.speaking, 1);
+      expect(withSentences.some((c) => c.exercises.includes('say-sentence'))).toBe(true);
+    });
   });
 
   it('coverage climbs fast early, as word frequency implies', () => {

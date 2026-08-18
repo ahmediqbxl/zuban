@@ -110,6 +110,7 @@ export const OPAQUE_CONJUNCTS: Record<string, GlyphSpec> = {
   'য্য': { roman: 'jj', ipa: 'dʒdʒ', note: 'য + য, said "jj" — সাহায্য is "shahajjo".' },
   'শ্ন': { roman: 'shn', ipa: 'ʃn' },
   'ব্য': { roman: 'bb', ipa: 'bb', note: 'ব + য, said "bb" — the য goes silent.' },
+  'স্য': { roman: 'ss', ipa: 'ss', note: 'স + য, said "ss" — সমস্যা is "shomossha".' },
   'স্প': { roman: 'sp', ipa: 'sp' },
   'র্থ': { roman: 'rth', ipa: 'rt̪ʰ', note: 'রেফ: a র before a consonant becomes a small hook ABOVE it, not a letter beside it. Easy to miss entirely.' },
   'ধ্য': { roman: 'dd', ipa: 'd̪d̪', note: 'ধ + য, said "dd" — the য goes silent, as in মধ্যে.' },

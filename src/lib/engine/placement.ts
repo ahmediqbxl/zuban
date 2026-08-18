@@ -167,7 +167,7 @@ export function scorePlacement(
     track = TRACKS.heritage;
   } else if (!strongListening && strongScript) {
     label = 'literate';
-    track = { script: false, listening: true, production: true };
+    track = { script: false, listening: true, production: true, speech: true };
   } else if (strongListening && strongScript) {
     label = 'intermediate';
     track = TRACKS.both;
