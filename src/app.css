@@ -1,3 +1,5 @@
+@import './fonts.css';
+
 /*
  * Zuban design system — mobile first, dark first.
  *
@@ -81,6 +83,10 @@ body {
   line-height: 1.85;
   font-feature-settings: 'akhn' 1, 'blwf' 1, 'half' 1, 'pstf' 1, 'vatu' 1;
 }
+
+/* Bangla appearing inline inside English prose — grammar notes quote words
+   mid-sentence, and they must not fall back to the UI font. */
+.bn-inline { font-family: var(--font-bn); font-weight: 500; }
 
 .bn-display { font-size: clamp(2.2rem, 11vw, 3.4rem); font-weight: 500; }
 .bn-lg      { font-size: clamp(1.5rem, 6.5vw, 2rem); }

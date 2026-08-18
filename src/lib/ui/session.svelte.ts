@@ -19,6 +19,7 @@ import {
 } from '$engine/sequencer';
 import { buildCoverageModel, coverage, scriptCoverage, readableSentences } from '$engine/coverage';
 import * as local from '$db/local';
+import { clusters } from '$content/scripts/bengali';
 
 /**
  * Drafts are shown in dev only, behind a visible banner. Without this the
@@ -32,9 +33,19 @@ export const course: Course = SHOW_DRAFTS ? raw : filterLearnerReady(raw);
 export const graph = new ContentGraph(course);
 export const coverageModel = buildCoverageModel(course);
 
+/**
+ * Exercises that need sound are only offered once sound exists.
+ *
+ * The sequencer plans by track, not by asset availability, so without this
+ * a learner on the listening track would be served a card with nothing to
+ * listen to. Recording is incremental, so this flips on per item.
+ */
+const AUDIO_REQUIRED = new Set(['word-listen', 'sentence-listen']);
+
 export const glyphById = new Map(course.glyphs.map((g) => [g.id, g]));
 export const lexemeById = new Map(course.lexemes.map((l) => [l.id, l]));
 export const sentenceById = new Map(course.sentences.map((s) => [s.id, s]));
+export const noteById = new Map(course.notes.map((n) => [n.id, n]));
 
 /** One thing to show the learner. */
 export interface Task {
@@ -57,6 +68,10 @@ export interface Task {
   context?: { form: string; roman: string; gloss: string };
   /** Vowel signs shown attached to a neutral base consonant (কা, কি, …). */
   demo?: string;
+  /** For word-spell: tappable script pieces, correct ones plus decoys. */
+  tiles?: string[];
+  /** Clip path, when the item has a recording. */
+  audio?: string;
 }
 
 class SessionState {
@@ -65,6 +80,8 @@ class SessionState {
   known = $state<Knowledge>(emptyKnowledge());
   track = $state<TrackConfig>(TRACKS.both);
   ready = $state(false);
+  placed = $state(false);
+  placementLabel = $state<string | null>(null);
   current = $state<Task | null>(null);
   /** Counts for the session summary. */
   done = $state(0);
@@ -78,7 +95,11 @@ class SessionState {
     ]);
     this.items = items;
     this.known = known;
-    if (profile) this.track = profile.track;
+    if (profile) {
+      this.track = profile.track;
+      this.placed = true;
+      this.placementLabel = profile.placement?.label ?? null;
+    }
     this.ready = true;
     this.advance();
   }
@@ -92,6 +113,20 @@ class SessionState {
   get readable() {
     return readableSentences(course, this.known.lexemes);
   }
+  /**
+   * Grammar notes attached to a sentence.
+   *
+   * Surfaced on demand beside the card rather than as a lesson preamble.
+   * Thin grammar is one of the documented reasons gamified courses
+   * plateau, but a wall of text before every sentence is why people skip
+   * it — so these are collapsed until asked for.
+   */
+  notesFor(sentenceId: string) {
+    const s = sentenceById.get(sentenceId);
+    if (!s?.notes) return [];
+    return s.notes.map((id) => noteById.get(id)).filter((n): n is NonNullable<typeof n> => Boolean(n));
+  }
+
   get dueCount() {
     return dueQueue([...this.items.values()], this.scheduler, new Date()).length;
   }
@@ -116,12 +151,20 @@ class SessionState {
       this.current = null;
       return;
     }
-    const kind = next.exercises[0];
-    if (!kind) {
-      this.current = null;
-      return;
+    // Walk the planned exercises and take the first that can actually be
+    // rendered — an audio card with no clip is worse than no card.
+    for (const kind of next.exercises) {
+      const task = this.buildTask(itemKey(next.tier, next.id, kind), true);
+      if (task) {
+        this.current = task;
+        return;
+      }
     }
-    this.current = this.buildTask(itemKey(next.tier, next.id, kind), true);
+    // Nothing servable for this item: mark it seen so the sequencer moves
+    // on instead of offering the same unrenderable item forever.
+    this.addKnown(next.tier, next.id);
+    void local.markKnown(next.tier, next.id);
+    this.advance();
   }
 
   private distractors(pool: string[], answer: string, n = 3): string[] {
@@ -138,9 +181,13 @@ class SessionState {
 
   private shuffleWithAnswer(answer: string, wrong: string[], seed: string): string[] {
     const all = [answer, ...wrong];
-    // Seeded rotation keeps the answer off position 0 without randomness.
+    if (all.length < 2) return all;
+    // Rotate by 1..len-1, never 0. A zero rotation leaves the answer first,
+    // and the answer is always constructed at index 0 — so "always tap the
+    // top option" would be a winning strategy. Seeded rather than random so
+    // the order is stable across reloads.
     const h = [...seed].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
-    const k = h % all.length;
+    const k = 1 + (h % (all.length - 1));
     return [...all.slice(k), ...all.slice(0, k)];
   }
 
@@ -177,18 +224,52 @@ class SessionState {
     if (tier === 'lexeme') {
       const l = lexemeById.get(id);
       if (!l) return null;
+      if (AUDIO_REQUIRED.has(kind) && !l.audio) return null;
+
+      if (kind === 'word-spell') {
+        // Production, not recognition: build the word from its script
+        // pieces. Prompted in romanization so it tests spelling rather
+        // than reading, which is precisely what a heritage learner lacks.
+        const correct = clusters(l.form);
+        const decoyPool = course.lexemes
+          .filter((x) => x.id !== l.id)
+          .flatMap((x) => clusters(x.form));
+        const decoys = [...new Set(decoyPool)]
+          .filter((c) => !correct.includes(c))
+          .slice(0, Math.max(2, Math.min(4, correct.length)));
+        // Deterministic interleave so tiles don't reshuffle on rerender.
+        const tiles = [...correct, ...decoys];
+        const h = [...id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 11);
+        tiles.sort((a, b) => {
+          const ha = ([...a].reduce((x, c) => (x * 31 + c.charCodeAt(0)) >>> 0, h)) % 997;
+          const hb = ([...b].reduce((x, c) => (x * 31 + c.charCodeAt(0)) >>> 0, h)) % 997;
+          return ha - hb;
+        });
+        return {
+          kind, tier, id, isNew,
+          prompt: l.roman,
+          answer: l.form,
+          tiles,
+          note: l.gloss[0],
+          audio: l.audio
+        };
+      }
+
       const pool = course.lexemes.map((x) => x.gloss[0]);
       const opts = this.shuffleWithAnswer(l.gloss[0], this.distractors(pool, l.gloss[0]), id);
       return {
         kind, tier, id, isNew,
-        prompt: l.form,
+        // A listening card must not show the word, or there is nothing to test.
+        prompt: kind === 'word-listen' ? '' : l.form,
         answer: l.gloss[0],
-        options: opts
+        options: opts,
+        audio: l.audio
       };
     }
 
     const s = sentenceById.get(id);
     if (!s) return null;
+    if (AUDIO_REQUIRED.has(kind) && !s.audio) return null;
     if (kind === 'cloze' && s.spans.length > 0) {
       // Blank the least-familiar word so the cloze tests something real.
       const target =
@@ -203,10 +284,21 @@ class SessionState {
         answer: surface,
         options: this.shuffleWithAnswer(surface, this.distractors(pool, surface), id),
         blank: { start: target.start, end: target.end },
-        note: lex ? `${lex.roman} — ${lex.gloss[0]}` : undefined
+        note: lex ? `${lex.roman} — ${lex.gloss[0]}` : undefined,
+        audio: s.audio
       };
     }
-    return { kind, tier, id, isNew, prompt: s.form, answer: s.gloss };
+    return {
+      kind, tier, id, isNew,
+      prompt: kind === 'sentence-listen' ? '' : s.form,
+      answer: s.gloss,
+      audio: s.audio,
+      options: this.shuffleWithAnswer(
+        s.gloss,
+        this.distractors(course.sentences.map((x) => x.gloss), s.gloss),
+        id
+      )
+    };
   }
 
   /** Record an answer, schedule the next review, persist, move on. */
@@ -256,8 +348,37 @@ class SessionState {
     this.known = k;
   }
 
+  /**
+   * Credit everything the placement test proved the learner already knows.
+   *
+   * Merges rather than replaces, so retaking placement can only ever widen
+   * what the sequencer considers known — a worse second attempt should not
+   * silently revoke material.
+   */
+  async seedKnown(seed: Knowledge) {
+    const k: Knowledge = {
+      glyphs: new Set([...this.known.glyphs, ...seed.glyphs]),
+      lexemes: new Set([...this.known.lexemes, ...seed.lexemes]),
+      sentences: new Set([...this.known.sentences, ...seed.sentences])
+    };
+    this.known = k;
+    await Promise.all([
+      ...[...seed.glyphs].map((id) => local.markKnown('glyph', id)),
+      ...[...seed.lexemes].map((id) => local.markKnown('lexeme', id)),
+      ...[...seed.sentences].map((id) => local.markKnown('sentence', id))
+    ]);
+    this.advance();
+  }
+
+  /** True until the learner has been placed — drives the first-run prompt. */
+  get needsPlacement() {
+    return this.ready && !this.placed;
+  }
+
   async setTrack(track: TrackConfig, placement?: { listening: number; script: number; label: string }) {
+    this.placed = true;
     this.track = track;
+    this.placementLabel = placement?.label ?? null;
     await local.saveProfile({
       id: 'me',
       course: course.meta.code,
@@ -275,6 +396,8 @@ class SessionState {
     this.known = emptyKnowledge();
     this.done = 0;
     this.correct = 0;
+    this.placed = false;
+    this.placementLabel = null;
     this.advance();
   }
 }

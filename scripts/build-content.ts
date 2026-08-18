@@ -14,7 +14,8 @@
  *   npx tsx scripts/build-content.ts
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -27,6 +28,21 @@ import type {
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../content/bn/course.json');
+const AUDIO_DIR = resolve(HERE, '../static/audio');
+
+/**
+ * Clip filenames are derived from the text itself, so a word and a
+ * sentence containing only that word share one recording, and re-running
+ * synthesis never duplicates a file.
+ */
+const clipName = (text: string) =>
+  `${createHash('sha1').update(text).digest('hex').slice(0, 16)}.mp3`;
+
+/** Attach a clip only if the file is actually on disk. */
+function audioFor(text: string): string | undefined {
+  const name = clipName(text);
+  return existsSync(resolve(AUDIO_DIR, name)) ? name : undefined;
+}
 
 /** Nothing here has been through native review yet. Say so, in the data. */
 const DRAFT: Provenance = { status: 'draft', source: 'llm:claude' };
@@ -74,6 +90,7 @@ function build(): { course: Course; gaps: string[] } {
     freqRank,
     glyphs: glyphsOf(form),
     register: 'cholito',
+    audio: audioFor(form.normalize('NFC')),
     provenance: DRAFT
   }));
 
@@ -143,6 +160,7 @@ function build(): { course: Course; gaps: string[] } {
       lexemes: [...new Set(ids)],
       spans,
       level,
+      audio: audioFor(nf),
       provenance: DRAFT
     });
   });
@@ -225,6 +243,15 @@ console.log(`  glyphs    ${course.glyphs.length}  (${conjuncts.length} conjuncts
 console.log(`  lexemes   ${course.lexemes.length}`);
 console.log(`  sentences ${course.sentences.length}`);
 console.log(`  notes     ${course.notes.length}`);
+
+const withAudio =
+  course.lexemes.filter((l) => l.audio).length + course.sentences.filter((s) => s.audio).length;
+const totalItems = course.lexemes.length + course.sentences.length;
+console.log(`  audio     ${withAudio}/${totalItems} items have a clip`);
+if (withAudio === 0) {
+  console.log('            → listening exercises stay disabled until clips exist.');
+  console.log('            → run: npm run audio:plan');
+}
 
 console.log('\nfirst 12 glyphs by computed teaching order:');
 console.log('  ' + course.glyphs.slice(0, 12).map((g) => `${g.form}(${g.roman})`).join('  '));

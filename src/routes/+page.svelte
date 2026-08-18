@@ -63,9 +63,21 @@
       </section>
     </div>
 
-    <a class="btn btn-primary center" href="{base}/learn" style="display: grid; place-items: center; text-decoration: none;">
-      {session.dueCount > 0 ? `Review ${session.dueCount} · then learn` : 'Start learning'}
-    </a>
+    {#if session.needsPlacement}
+      <!-- Placement first: without it every learner is treated as a cold
+           beginner, which wastes a heritage speaker's time on vocabulary
+           they already have. -->
+      <a class="btn btn-primary center" href="{base}/placement" style="display: grid; place-items: center; text-decoration: none;">
+        Find where to start
+      </a>
+      <a class="btn center" href="{base}/learn" style="display: grid; place-items: center; text-decoration: none;">
+        Skip — start from the beginning
+      </a>
+    {:else}
+      <a class="btn btn-primary center" href="{base}/learn" style="display: grid; place-items: center; text-decoration: none;">
+        {session.dueCount > 0 ? `Review ${session.dueCount} · then learn` : 'Continue learning'}
+      </a>
+    {/if}
 
     {#if nextWords.length}
       <section class="card">

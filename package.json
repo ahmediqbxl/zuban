@@ -13,7 +13,10 @@
     "test:watch": "vitest",
     "build:content": "tsx scripts/build-content.ts",
     "content:stats": "tsx scripts/content-stats.ts",
-    "content:audio": "tsx scripts/generate-audio.ts"
+    "content:audio": "tsx scripts/generate-audio.ts",
+    "fonts:fetch": "node scripts/fetch-fonts.mjs",
+    "audio:generate": "node scripts/generate-audio.mjs",
+    "audio:plan": "node scripts/generate-audio.mjs --dry-run"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.6",

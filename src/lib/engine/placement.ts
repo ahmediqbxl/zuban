@@ -51,32 +51,45 @@ export interface PlacementResult {
 export function buildProbes(course: Course, perAxis = 5): PlacementProbe[] {
   const probes: PlacementProbe[] = [];
 
-  // Listening probes come from sentences with audio: hear it, pick the gloss.
+  // ---- Comprehension axis ------------------------------------------------
+  // Ideally this is audio: hear a sentence, pick its meaning. Until the
+  // course has recordings we fall back to romanization — show `ami bhalo
+  // achhi`, ask what it means. That still isolates the variable we care
+  // about, because romanization is readable by anyone: a heritage learner
+  // recognises the words instantly, a cold beginner cannot. Testing
+  // comprehension without requiring the script is the entire point of
+  // keeping this axis separate.
   const withAudio = course.sentences.filter((s) => s.audio);
-  const byLevel = (lvl: number) => withAudio.filter((s) => (s.level ?? 3) === lvl);
+  const usingAudio = withAudio.length >= perAxis;
+  const pool = usingAudio ? withAudio : course.sentences;
 
-  for (let lvl = 1 as 1 | 2 | 3 | 4 | 5; lvl <= perAxis; lvl++) {
-    const pool = byLevel(lvl);
-    if (pool.length === 0) continue;
-    const target = pool[0];
-    const distractors = withAudio
-      .filter((s) => s.id !== target.id)
+  const byLevel = (lvl: number) => pool.filter((s) => (s.level ?? 3) === lvl);
+
+  for (let lvl = 1; lvl <= 5 && probes.length < perAxis; lvl++) {
+    const atLevel = byLevel(lvl);
+    if (atLevel.length === 0) continue;
+    const target = atLevel[0];
+    const distractors = pool
+      .filter((s) => s.id !== target.id && s.gloss !== target.gloss)
       .slice(0, 3)
       .map((s) => s.gloss);
+    if (distractors.length < 3) continue;
+
     probes.push({
       id: `listen-${lvl}`,
       axis: 'listening',
       level: lvl as 1 | 2 | 3 | 4 | 5,
       target: target.id,
-      prompt: { audio: target.audio },
+      prompt: usingAudio ? { audio: target.audio } : { text: target.roman },
       options: [target.gloss, ...distractors],
       answer: 0
     });
   }
 
-  // Script probes: see the word in Bangla script, pick its romanization.
-  // This isolates decoding from vocabulary — a heritage learner knows the
-  // word perfectly well and simply cannot read it.
+  // ---- Script axis -------------------------------------------------------
+  // See the word in Bangla script, pick its romanization. This isolates
+  // decoding from vocabulary: a heritage learner knows the word perfectly
+  // well and simply cannot read it.
   const ranked = course.lexemes
     .filter((l) => typeof l.freqRank === 'number')
     .sort((a, b) => (a.freqRank ?? 0) - (b.freqRank ?? 0));
@@ -85,15 +98,17 @@ export function buildProbes(course: Course, perAxis = 5): PlacementProbe[] {
   for (let i = 0; i < perAxis; i++) {
     const target = ranked[i * stride];
     if (!target) break;
-    const distractors = ranked
-      .filter((l) => l.id !== target.id)
-      .slice(i * stride + 1, i * stride + 4)
-      .map((l) => l.roman);
+    // Distinct romanizations only — শ and ষ both give "sh", and an
+    // exercise offering the same answer twice is unanswerable.
+    const distractors = [
+      ...new Set(ranked.filter((l) => l.roman !== target.roman).map((l) => l.roman))
+    ].slice(i * 3, i * 3 + 3);
     if (distractors.length < 3) continue;
+
     probes.push({
       id: `script-${i + 1}`,
       axis: 'script',
-      level: (Math.min(5, i + 1) as 1 | 2 | 3 | 4 | 5),
+      level: Math.min(5, i + 1) as 1 | 2 | 3 | 4 | 5,
       target: target.id,
       prompt: { text: target.form },
       options: [target.roman, ...distractors],
@@ -102,6 +117,22 @@ export function buildProbes(course: Course, perAxis = 5): PlacementProbe[] {
   }
 
   return probes;
+}
+
+/**
+ * Options in presentation order, with the correct answer moved off
+ * position 0. Deterministic per probe so a reload does not reshuffle.
+ */
+export function presentOptions(probe: PlacementProbe): { text: string; isAnswer: boolean }[] {
+  const tagged = probe.options.map((text, i) => ({ text, isAnswer: i === probe.answer }));
+  if (tagged.length < 2) return tagged;
+  // Rotate by 1..len-1, never 0: a zero rotation would leave the answer in
+  // first position, and since buildProbes always emits the answer at index
+  // 0, "always pick the top option" would score full marks.
+  const h = [...probe.id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const k = 1 + (h % (tagged.length - 1));
+  const rotated = [...tagged.slice(k), ...tagged.slice(0, k)];
+  return rotated;
 }
 
 /** Score the probes and decide where the learner starts. */
