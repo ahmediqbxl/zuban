@@ -156,6 +156,57 @@ A speaking course needs a voice. In order of preference:
 3. **The device's own voice.** Free and automatic where it exists — common
    on Android, frequently absent on iOS. Nothing to configure.
 
+## Getting it on your phone
+
+The app is a static site, so it will run on any static host. Two things
+matter before you deploy:
+
+**Set `ZUBAN_SHOW_DRAFTS=1`.** Without it the review gate withholds all
+unreviewed content and the deployed app has nothing to teach — it will
+show "the course is being checked" and no cards. The provided
+`netlify.toml` and Pages workflow already set it. Remove it once the
+content has been through native review.
+
+**Set `BASE_PATH` only for subpath hosting.** GitHub Pages serves from
+`/<repo>/`; Netlify, Cloudflare Pages and custom domains serve from the
+root and need it left unset.
+
+### Netlify
+
+Connect the repository. `netlify.toml` supplies the build command, the SPA
+redirect, and the cache headers — nothing to configure. If you are
+deploying a branch rather than `main`, set that branch as the production
+branch in Netlify's settings.
+
+### GitHub Pages
+
+`.github/workflows/pages.yml` builds and deploys on push to `main`. Enable
+Pages in the repository settings with **Source: GitHub Actions**. Note that
+Pages on a *private* repository needs a paid GitHub plan.
+
+### On your own network, no deploy
+
+Fastest way to look at it on a phone on the same wifi:
+
+```bash
+ZUBAN_SHOW_DRAFTS=1 npm run build
+npx vite preview --host          # prints a LAN address like 192.168.1.x:4173
+```
+
+Open that address on the phone. Everything works except installing to the
+Home Screen and notifications, which browsers restrict to HTTPS.
+
+### Installing it
+
+Once it is on HTTPS, install it so it behaves like an app and works
+offline:
+
+- **iPhone** — open in Safari, then Share → *Add to Home Screen*. This is
+  required for notifications on iOS; the Push API is unavailable to a web
+  app that has not been installed.
+- **Android** — Chrome offers an install prompt, or use ⋮ → *Install app*.
+  The app also shows an install button under **You**.
+
 ## Content review
 
 Every content record carries a `provenance.status`:

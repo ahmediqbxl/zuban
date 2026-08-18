@@ -12,6 +12,7 @@
  */
 
 import { browser } from '$app/environment';
+import { base } from '$app/paths';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -127,8 +128,8 @@ class Install {
       body: dueCount > 0
         ? `${dueCount} ${dueCount === 1 ? 'card is' : 'cards are'} ready for review.`
         : 'Nothing due right now — nice work.',
-      icon: '/icon-192.png',
-      badge: '/icon-192.png',
+      icon: `${base}/icon-192.png`,
+      badge: `${base}/icon-192.png`,
       tag: 'zuban-due'
     });
   }

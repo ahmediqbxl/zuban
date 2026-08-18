@@ -1,0 +1,46 @@
+# Netlify deployment.
+#
+# The build ships unreviewed content on purpose — without ZUBAN_SHOW_DRAFTS
+# the review gate withholds everything and the app has nothing to teach.
+# Remove that variable once the course has been through native review.
+
+[build]
+  command = "npm run build:content && npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "22"
+  ZUBAN_SHOW_DRAFTS = "1"
+
+# The app is a hash-free SPA served from static files, so every unknown
+# path has to fall through to the shell for client-side routing to work.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Content-hashed build output never changes under the same name.
+[[headers]]
+  for = "/_app/immutable/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# The service worker must never be cached, or an install can be pinned to
+# an old build indefinitely.
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # The microphone is used by record-and-compare, on-device only.
+    Permissions-Policy = "microphone=(self), camera=(), geolocation=()"

@@ -12,7 +12,16 @@
  * Review state never touches the network — it lives in IndexedDB.
  */
 
-import { build, files, version } from '$service-worker';
+import { base, build, files, version } from '$service-worker';
+
+/**
+ * Every path here must be built from `base`.
+ *
+ * Under subpath hosting — GitHub Pages serves from /<repo>/ — a literal
+ * '/index.html' resolves to the domain root, so the offline fallback and
+ * notification links silently point at nothing.
+ */
+const at = (path: string) => `${base}${path}`;
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 const CACHE = `zuban-${version}`;
@@ -59,7 +68,7 @@ sw.addEventListener('fetch', (event) => {
         if (hit) return hit;
         // Navigation offline with nothing cached: fall back to the shell.
         if (req.mode === 'navigate') {
-          const shell = await cache.match('/index.html');
+          const shell = await cache.match(at('/index.html')) ?? (await cache.match(at('/')));
           if (shell) return shell;
         }
         throw new Error('offline and uncached');
@@ -90,8 +99,8 @@ sw.addEventListener('push', (event) => {
       body: due > 0
         ? `${due} ${due === 1 ? 'card is' : 'cards are'} ready for review.`
         : 'Time for a few minutes of Bangla.',
-      icon: '/icon-192.png',
-      badge: '/icon-192.png',
+      icon: at('/icon-192.png'),
+      badge: at('/icon-192.png'),
       // One review reminder at a time — a stack of them is nagging.
       tag: 'zuban-due',
       renotify: false
@@ -108,11 +117,11 @@ sw.addEventListener('notificationclick', (event) => {
       for (const c of clients) {
         if ('focus' in c) {
           await c.focus();
-          if ('navigate' in c) await (c as WindowClient).navigate('/learn');
+          if ('navigate' in c) await (c as WindowClient).navigate(at('/learn'));
           return;
         }
       }
-      await sw.clients.openWindow('/learn');
+      await sw.clients.openWindow(at('/learn'));
     })()
   );
 });

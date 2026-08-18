@@ -50,7 +50,10 @@ for (const [size, maskable, name] of [
   [192, false, 'icon-192.png'],
   [512, false, 'icon-512.png'],
   [512, true, 'icon-512-maskable.png'],
-  [180, false, 'apple-touch-icon.png']
+  [180, false, 'apple-touch-icon.png'],
+  // Browsers request /favicon.ico unprompted; a linked PNG stops that.
+  [32, false, 'favicon-32.png'],
+  [16, false, 'favicon-16.png']
 ]) {
   const p = await browser.newPage({ viewport: { width: size, height: size } });
   await p.setContent(page(size, maskable));

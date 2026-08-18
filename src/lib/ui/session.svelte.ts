@@ -24,11 +24,16 @@ import { clusters } from '$content/scripts/bengali';
 import { speech } from './speech.svelte';
 
 /**
- * Drafts are shown in dev only, behind a visible banner. Without this the
- * app is empty until a native speaker reviews the seed content — correct
- * for production, useless for building.
+ * Show content no native speaker has reviewed?
+ *
+ * Always on in dev. In a build, only when ZUBAN_SHOW_DRAFTS=1 was set —
+ * which is how you get a usable personal copy before review is finished.
+ * A public build left at the default ships nothing unreviewed, and the app
+ * explains the empty course rather than looking broken.
+ *
+ * Whenever this is on, a standing banner says so.
  */
-export const SHOW_DRAFTS = import.meta.env.DEV;
+export const SHOW_DRAFTS = import.meta.env.DEV || __ZUBAN_SHOW_DRAFTS__;
 
 const raw = courseData as unknown as Course;
 export const course: Course = SHOW_DRAFTS ? raw : filterLearnerReady(raw);
