@@ -1,12 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { base } from '$app/paths';
-  import { session, course, SHOW_DRAFTS, lexemeById, coverageModel } from '$ui/session.svelte';
+  import { session, course, SHOW_DRAFTS, awaitingReview, lexemeById, coverageModel } from '$ui/session.svelte';
   import { highestValueNext } from '$engine/coverage';
+  import { rawCounts } from '$ui/session.svelte';
 
   onMount(() => { session.load(); });
 
   const pct = (x: number) => Math.round(x * 100);
+  // Counts come from the unfiltered bundle so the waiting message can say
+  // how much is actually queued for review.
+  const raw_lexemes = rawCounts.lexemes;
+  const raw_sentences = rawCounts.sentences;
   let nextWords = $derived(
     highestValueNext(coverageModel, session.known.lexemes, 5)
       .map((w) => lexemeById.get(w.id))
@@ -33,7 +38,20 @@
   </p>
 {/if}
 
-{#if !session.ready}
+{#if awaitingReview}
+  <div class="card">
+    <h2 style="margin: 0 0 0.5rem; font-size: 1.15rem;">The course is being checked</h2>
+    <p class="muted small" style="margin: 0 0 0.8rem;">
+      Zuban only shows material a native Bangla speaker has read and approved.
+      That review is still in progress, so there's nothing to study yet.
+    </p>
+    <p class="faint small" style="margin: 0;">
+      {raw_lexemes} words and {raw_sentences} sentences are drafted and waiting.
+      Showing them before someone has checked them would teach mistakes, which
+      is worse than teaching nothing.
+    </p>
+  </div>
+{:else if !session.ready}
   <p class="muted">Loading…</p>
 {:else}
   <div class="stack">

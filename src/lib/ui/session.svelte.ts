@@ -18,6 +18,7 @@ import {
   type Knowledge, type TrackConfig
 } from '$engine/sequencer';
 import { buildCoverageModel, coverage, scriptCoverage, readableSentences } from '$engine/coverage';
+import { computeStats, type DayRow, type Stats } from './stats';
 import * as local from '$db/local';
 import { clusters } from '$content/scripts/bengali';
 
@@ -31,6 +32,23 @@ export const SHOW_DRAFTS = import.meta.env.DEV;
 const raw = courseData as unknown as Course;
 export const course: Course = SHOW_DRAFTS ? raw : filterLearnerReady(raw);
 export const graph = new ContentGraph(course);
+
+/**
+ * True when the review gate has withheld everything.
+ *
+ * A production build ships only content a native speaker has approved, so
+ * before review lands the course is legitimately empty. Saying so plainly
+ * beats a silent 0% with nothing to tap, which reads as a broken app.
+ */
+export const awaitingReview =
+  course.lexemes.length === 0 && raw.lexemes.length > 0;
+
+/** Sizes of the unfiltered bundle, for the awaiting-review message. */
+export const rawCounts = {
+  lexemes: raw.lexemes.length,
+  sentences: raw.sentences.length,
+  glyphs: raw.glyphs.length
+};
 export const coverageModel = buildCoverageModel(course);
 
 /**
@@ -40,7 +58,14 @@ export const coverageModel = buildCoverageModel(course);
  * a learner on the listening track would be served a card with nothing to
  * listen to. Recording is incremental, so this flips on per item.
  */
-const AUDIO_REQUIRED = new Set(['word-listen', 'sentence-listen']);
+const AUDIO_REQUIRED = new Set([
+  'word-listen',
+  'sentence-listen',
+  // glyph-find is "hear a sound, pick the letter" — there is no way to pose
+  // it without audio. It was previously planned by the sequencer but built
+  // with no options at all, producing an unanswerable card.
+  'glyph-find'
+]);
 
 export const glyphById = new Map(course.glyphs.map((g) => [g.id, g]));
 export const lexemeById = new Map(course.lexemes.map((l) => [l.id, l]));
@@ -86,15 +111,20 @@ class SessionState {
   /** Counts for the session summary. */
   done = $state(0);
   correct = $state(0);
+  days = $state<DayRow[]>([]);
+  /** Exercise kinds the sequencer planned per item, pending seeding. */
+  private plannedFor = new Map<string, ExerciseKind[]>();
 
   async load() {
-    const [items, known, profile] = await Promise.all([
+    const [items, known, profile, days] = await Promise.all([
       local.loadItems(),
       local.loadKnown(),
-      local.loadProfile()
+      local.loadProfile(),
+      local.loadDays()
     ]);
     this.items = items;
     this.known = known;
+    this.days = days;
     if (profile) {
       this.track = profile.track;
       this.placed = true;
@@ -127,6 +157,10 @@ class SessionState {
     return s.notes.map((id) => noteById.get(id)).filter((n): n is NonNullable<typeof n> => Boolean(n));
   }
 
+  get stats(): Stats {
+    return computeStats(this.days);
+  }
+
   get dueCount() {
     return dueQueue([...this.items.values()], this.scheduler, new Date()).length;
   }
@@ -141,10 +175,13 @@ class SessionState {
    */
   advance() {
     const now = new Date();
-    const due = dueQueue([...this.items.values()], this.scheduler, now, 1);
-    if (due.length > 0) {
-      this.current = this.buildTask(due[0].key, false);
-      if (this.current) return;
+    const due = dueQueue([...this.items.values()], this.scheduler, now, 8);
+    for (const item of due) {
+      const task = this.buildTask(item.key, false);
+      if (task && this.isAnswerable(task)) {
+        this.current = task;
+        return;
+      }
     }
     const next = nextItem(graph, this.known, this.track);
     if (!next) {
@@ -152,11 +189,14 @@ class SessionState {
       return;
     }
     // Walk the planned exercises and take the first that can actually be
-    // rendered — an audio card with no clip is worse than no card.
+    // rendered — an audio card with no clip is worse than no card. The
+    // rest are seeded once this one is answered, so a word gets drilled
+    // from several angles rather than only the first that happened to fit.
     for (const kind of next.exercises) {
       const task = this.buildTask(itemKey(next.tier, next.id, kind), true);
-      if (task) {
+      if (task && this.isAnswerable(task)) {
         this.current = task;
+        this.plannedFor.set(`${next.tier}:${next.id}`, next.exercises);
         return;
       }
     }
@@ -197,8 +237,21 @@ class SessionState {
     if (tier === 'glyph') {
       const g = glyphById.get(id);
       if (!g) return null;
-      const pool = course.glyphs.map((x) => x.roman);
-      const opts = this.shuffleWithAnswer(g.roman, this.distractors(pool, g.roman), id);
+      // glyph-sound shows the letter and asks for its sound; glyph-find
+      // plays the sound and asks for the letter. Same pair, opposite
+      // direction, so the options come from opposite columns.
+      const opts =
+        kind === 'glyph-find'
+          ? this.shuffleWithAnswer(
+              g.form,
+              this.distractors(course.glyphs.map((x) => x.form), g.form),
+              id
+            )
+          : this.shuffleWithAnswer(
+              g.roman,
+              this.distractors(course.glyphs.map((x) => x.roman), g.roman),
+              id
+            );
 
       // Always anchor a glyph to a real word that contains it. Prefer the
       // commonest introducing word so the example is one worth knowing.
@@ -210,9 +263,10 @@ class SessionState {
       return {
         kind, tier, id, isNew,
         // A vowel sign cannot stand alone, so show it on a neutral base.
-        prompt: g.kind === 'vowel-sign' ? `ক${g.form}` : g.form,
-        answer: g.roman,
-        options: kind === 'glyph-sound' ? opts : undefined,
+        // glyph-find shows nothing — the learner is answering from sound.
+        prompt: kind === 'glyph-find' ? '' : g.kind === 'vowel-sign' ? `ক${g.form}` : g.form,
+        answer: kind === 'glyph-find' ? g.form : g.roman,
+        options: opts,
         note: g.mnemonic,
         demo: g.kind === 'vowel-sign' ? g.form : undefined,
         context: example
@@ -322,10 +376,66 @@ class SessionState {
     if (grade !== 'again' && !this.isKnown(task.tier, task.id)) {
       this.addKnown(task.tier, task.id);
       await local.markKnown(task.tier, task.id);
+      // Seed the item's other exercises so they enter the review rotation.
+      // Reading a word and spelling it are different skills scheduled
+      // independently — without this the first exercise that fit was the
+      // only one a learner ever saw, and production was never practised.
+      await this.seedSiblingExercises(task);
     }
 
-    await Promise.all([local.saveItem(updated), local.logReview(key, grade)]);
+    await Promise.all([
+      local.saveItem(updated),
+      local.logReview(key, grade),
+      // Recorded after the knowledge update so today's row carries the
+      // coverage the learner actually ended the session with.
+      local.recordActivity(grade !== 'again', this.coverage)
+    ]);
+    this.days = await local.loadDays();
     this.advance();
+  }
+
+  /**
+   * Create cards for the item's remaining exercise kinds.
+   *
+   * They start due, so they surface as reviews shortly after the item is
+   * introduced — read it, then spell it — rather than all at once much
+   * later. Unrenderable kinds (audio with no clip) are skipped and will be
+   * picked up whenever a recording lands.
+   */
+  private async seedSiblingExercises(task: Task) {
+    const planned = this.plannedFor.get(`${task.tier}:${task.id}`) ?? [];
+    const now = new Date();
+    const next = new Map(this.items);
+    const writes: Promise<unknown>[] = [];
+
+    for (const kind of planned) {
+      if (kind === task.kind) continue;
+      const key = itemKey(task.tier, task.id, kind);
+      if (next.has(key)) continue;
+      const preview = this.buildTask(key, true);
+      if (!preview || !this.isAnswerable(preview)) continue; // not renderable yet
+      const item = this.scheduler.create(key, now);
+      next.set(key, item);
+      writes.push(local.saveItem(item));
+    }
+
+    if (writes.length > 0) {
+      this.items = next;
+      await Promise.all(writes);
+    }
+    this.plannedFor.delete(`${task.tier}:${task.id}`);
+  }
+
+  /**
+   * A card the learner can actually act on.
+   *
+   * Cheap insurance: a multiple-choice card with no options, or a spelling
+   * card with no tiles, is a dead end that strands the session. Better to
+   * skip it than to render something unanswerable.
+   */
+  private isAnswerable(task: Task): boolean {
+    if (task.kind === 'word-spell') return (task.tiles?.length ?? 0) > 0;
+    return (task.options?.length ?? 0) > 1;
   }
 
   private isKnown(tier: TargetTier, id: string) {
@@ -398,6 +508,7 @@ class SessionState {
     this.correct = 0;
     this.placed = false;
     this.placementLabel = null;
+    this.days = [];
     this.advance();
   }
 }

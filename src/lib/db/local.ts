@@ -17,7 +17,7 @@ import type { ItemKey, ReviewItem } from '$engine/scheduler';
 import type { TrackConfig } from '$engine/sequencer';
 
 const DB_NAME = 'zuban';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export interface StoredProfile {
   id: 'me';
@@ -40,6 +40,17 @@ interface ZubanDB extends DBSchema {
     value: { key: string; tier: string; id: string; at: string };
   };
   profile: { key: string; value: StoredProfile };
+  /**
+   * One row per calendar day the learner studied.
+   *
+   * Kept locally so return-rate and learning-velocity are measurable
+   * without any third-party analytics — the app works signed-out and
+   * offline, so anything server-side would miss most of the picture.
+   */
+  days: {
+    key: string; // YYYY-MM-DD, local time
+    value: { day: string; items: number; correct: number; coverage: number };
+  };
   /** Append-only log so sync can replay rather than guess. */
   reviews: {
     key: number;
@@ -53,7 +64,15 @@ let dbp: Promise<IDBPDatabase<ZubanDB>> | null = null;
 function db() {
   if (!dbp) {
     dbp = openDB<ZubanDB>(DB_NAME, DB_VERSION, {
-      upgrade(d) {
+      upgrade(d, oldVersion) {
+        if (oldVersion >= 1) {
+          // Upgrading an existing install: add only what's new so a
+          // learner's review history survives the migration.
+          if (!d.objectStoreNames.contains('days')) {
+            d.createObjectStore('days', { keyPath: 'day' });
+          }
+          return;
+        }
         const items = d.createObjectStore('items', { keyPath: 'key' });
         // Due date is stored as an ISO string so it can be range-scanned.
         items.createIndex('by-due', 'dueIso');
@@ -64,10 +83,34 @@ function db() {
           autoIncrement: true
         });
         reviews.createIndex('by-synced', 'syncedFlag');
+        d.createObjectStore('days', { keyPath: 'day' });
       }
     });
   }
   return dbp;
+}
+
+/**
+ * Strip reactivity before writing.
+ *
+ * Svelte 5 `$state` deep-proxies objects, and IndexedDB cannot
+ * structured-clone a Proxy — it throws "could not be cloned". Anything
+ * read out of reactive state and handed straight to `put()` fails at
+ * runtime, so this boundary rebuilds a plain object explicitly. Doing it
+ * here rather than at each call site means no caller has to remember.
+ */
+function toPlainCard(c: Card): Card {
+  return {
+    due: new Date(c.due),
+    stability: c.stability,
+    difficulty: c.difficulty,
+    elapsed_days: c.elapsed_days,
+    scheduled_days: c.scheduled_days,
+    reps: c.reps,
+    lapses: c.lapses,
+    state: c.state,
+    last_review: c.last_review ? new Date(c.last_review) : undefined
+  } as Card;
 }
 
 /** FSRS returns Date objects; IndexedDB round-trips them fine, but be explicit. */
@@ -89,7 +132,12 @@ export async function loadItems(): Promise<Map<ItemKey, ReviewItem>> {
 }
 
 export async function saveItem(item: ReviewItem): Promise<void> {
-  await (await db()).put('items', { ...item, updatedAt: new Date().toISOString() });
+  await (await db()).put('items', {
+    key: item.key,
+    card: toPlainCard(item.card),
+    rev: item.rev,
+    updatedAt: new Date().toISOString()
+  });
 }
 
 export async function logReview(item: ItemKey, grade: string): Promise<void> {
@@ -130,12 +178,49 @@ export async function loadProfile(): Promise<StoredProfile | undefined> {
 }
 
 export async function saveProfile(p: StoredProfile): Promise<void> {
-  await (await db()).put('profile', p);
+  // Rebuilt field by field for the same reason as cards: the track and
+  // placement objects routinely arrive as reactive proxies.
+  await (await db()).put('profile', {
+    id: 'me',
+    course: p.course,
+    track: { script: p.track.script, listening: p.track.listening, production: p.track.production },
+    placement: p.placement
+      ? { listening: p.placement.listening, script: p.placement.script, label: p.placement.label }
+      : undefined,
+    createdAt: p.createdAt,
+    userId: p.userId
+  });
 }
 
 /** Reviews not yet pushed upstream. Sync drains this. */
 export async function pendingReviews() {
   return (await (await db()).getAll('reviews')).filter((r) => !r.synced);
+}
+
+/** Local calendar date. Study days are a human notion, not a UTC one. */
+export function today(now = new Date()): string {
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/** Fold one answered card into today's row. */
+export async function recordActivity(correct: boolean, coverage: number): Promise<void> {
+  const d = await db();
+  const day = today();
+  const prev = (await d.get('days', day)) ?? { day, items: 0, correct: 0, coverage: 0 };
+  await d.put('days', {
+    day,
+    items: prev.items + 1,
+    correct: prev.correct + (correct ? 1 : 0),
+    // Store the latest reading rather than a sum — this is a level, not a count.
+    coverage
+  });
+}
+
+export async function loadDays() {
+  return (await (await db()).getAll('days')).sort((a, b) => a.day.localeCompare(b.day));
 }
 
 export async function clearAll(): Promise<void> {
@@ -144,6 +229,7 @@ export async function clearAll(): Promise<void> {
     d.clear('items'),
     d.clear('known'),
     d.clear('profile'),
-    d.clear('reviews')
+    d.clear('reviews'),
+    d.clear('days')
   ]);
 }

@@ -8,7 +8,8 @@
   const tabs = [
     { href: '/', label: 'Today' },
     { href: '/learn', label: 'Learn' },
-    { href: '/script', label: 'Script' }
+    { href: '/script', label: 'Script' },
+    { href: '/you', label: 'You' }
   ];
 
   const isCurrent = (href: string, path: string) =>

@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { base } from '$app/paths';
-  import { course, session } from '$ui/session.svelte';
+  import { course, session, SHOW_DRAFTS } from '$ui/session.svelte';
   import { buildProbes, scorePlacement, presentOptions, type PlacementResult } from '$engine/placement';
 
   const probes = buildProbes(course);
@@ -121,7 +121,8 @@
     {/if}
   </div>
 
-  <div style="margin-top: 1rem;">
+  <!-- data-answer is a dev-only end-to-end test hook, absent in production. -->
+  <div style="margin-top: 1rem;" data-answer={SHOW_DRAFTS ? probe.options[probe.answer] : undefined}>
     {#each options as option, i}
       <button class="choice" onclick={() => answer(i)}>{option.text}</button>
     {/each}

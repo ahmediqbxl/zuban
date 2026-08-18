@@ -67,3 +67,52 @@ sw.addEventListener('fetch', (event) => {
     })()
   );
 });
+
+// ---------------------------------------------------------------------------
+// Push
+//
+// The payload is deliberately thin — a count, not content. Review state is
+// the learner's and lives on their device; a push server has no business
+// knowing which words someone is struggling with.
+// ---------------------------------------------------------------------------
+
+sw.addEventListener('push', (event) => {
+  let due = 0;
+  try {
+    due = (event.data?.json() as { due?: number } | undefined)?.due ?? 0;
+  } catch {
+    // A malformed or empty payload should still produce a usable nudge:
+    // userVisibleOnly means we are obliged to show something.
+  }
+
+  event.waitUntil(
+    sw.registration.showNotification('Zuban', {
+      body: due > 0
+        ? `${due} ${due === 1 ? 'card is' : 'cards are'} ready for review.`
+        : 'Time for a few minutes of Bangla.',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      // One review reminder at a time — a stack of them is nagging.
+      tag: 'zuban-due',
+      renotify: false
+    })
+  );
+});
+
+sw.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  // Focus an existing window rather than opening a duplicate.
+  event.waitUntil(
+    (async () => {
+      const clients = await sw.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      for (const c of clients) {
+        if ('focus' in c) {
+          await c.focus();
+          if ('navigate' in c) await (c as WindowClient).navigate('/learn');
+          return;
+        }
+      }
+      await sw.clients.openWindow('/learn');
+    })()
+  );
+});

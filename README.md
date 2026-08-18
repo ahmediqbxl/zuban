@@ -13,8 +13,13 @@ phrasebook-grade.
 
 ## Status
 
-Early. The engine and content pipeline work end to end and are tested. The
-Bangla content is **unreviewed draft** — see "Content review" below.
+The app works end to end: placement, five exercise types, spaced review,
+offline, installable. 84 unit tests and a browser smoke test.
+
+The Bangla content is **unreviewed draft**, so a production build ships an
+empty course by design and says so on screen. Native-speaker review is the
+one thing standing between this and something usable — see "Content
+review" below.
 
 ## What makes it different
 
@@ -45,6 +50,20 @@ as independent axes. A diaspora learner who understands spoken Bangla but
 can't read scores high/zero and skips comprehension drills; a cold beginner
 scores zero/zero. Same content graph, different entry point.
 
+## What's built
+
+| | |
+|---|---|
+| **Placement** | Measures comprehension and script as independent axes, so a heritage learner and a beginner share one content graph with different entry points. Falls back to romanized prompts until audio is recorded. |
+| **Exercises** | Letter→sound, sound→letter, word→meaning, spelling by tile assembly, cloze over sentences, and listening. Each is scheduled independently, because reading a word and spelling it are different skills. |
+| **Review** | FSRS, with reviews served before new material so forgetting is caught first. |
+| **Script** | Vendored, subsetted Noto Sans Bengali plus a rendering self-test at `/script` carrying the words that break Bengali shaping in practice. |
+| **Progress** | Corpus coverage, script coverage, readable-sentence share, and a pace projection. No streaks. |
+| **Offline** | Static build, IndexedDB state, service worker precache. Nothing touches the network to answer a card. |
+| **Account** | Optional Supabase sync with RLS. Signed-out is a fully supported state, not a degraded one. |
+| **Reminders** | Web Push on due reviews. Install prompt included because iOS only allows push for home-screen web apps. |
+| **Audio** | Pipeline and playback are built; no recordings yet. Exercises needing sound are withheld rather than served empty. |
+
 ## Layout
 
 ```
@@ -59,18 +78,45 @@ src/lib/
   engine/sequencer.ts  i+1 selection over the dependency graph
   engine/coverage.ts   corpus-coverage progress metric
   engine/placement.ts  two-axis placement test
+  db/local.ts          IndexedDB; strips reactive proxies before writing
+  db/sync.ts           optional Supabase sync
+  db/auth.svelte.ts    optional accounts
+  ui/session.svelte.ts glue between engine and screen
+  ui/install.svelte.ts install + notification prompts
+  ui/stats.ts          retention and learning velocity
 scripts/build-content.ts   source → validated course.json
-tests/                     analyzer + engine tests
+scripts/fetch-fonts.mjs    vendor the Bengali font
+scripts/generate-audio.mjs TTS fallback for the audio tail
+scripts/make-icons.mjs     render app icons using the real জ glyph
+tests/                     unit tests
+tests/e2e/smoke.mjs        browser smoke test
 ```
 
 ## Develop
 
 ```bash
 npm install
-npm run build:content   # rebuild content/bn/course.json from source
-npm test                # analyzer + engine tests
 npm run dev             # app at localhost:5173
+
+npm test                # unit: analyzer, engine, placement, stats
+npm run build:content   # rebuild content/bn/course.json from source
+npm run fonts:fetch     # re-vendor the Bengali font
+npm run audio:plan      # what audio is missing (no API calls)
 ```
+
+Browser smoke test — catches what unit tests structurally cannot, and has
+found most of the real bugs in this project:
+
+```bash
+npm run dev -- --port 5190
+npm run test:e2e                 # full learning flow
+
+npm run build && npx vite preview --port 5192
+npm run test:e2e:prod            # review gate, service worker, offline
+```
+
+In dev, unreviewed drafts are shown behind a warning banner so the app is
+buildable before review is done. In production they are withheld.
 
 ## Content review
 

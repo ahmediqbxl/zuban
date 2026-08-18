@@ -152,7 +152,8 @@
   </div>
 
   {#if task.kind === 'word-spell'}
-    <div style="margin-top: 1rem;">
+    <!-- data-answer is a dev-only end-to-end test hook, absent in production. -->
+    <div style="margin-top: 1rem;" data-answer={SHOW_DRAFTS ? task.answer : undefined}>
       <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
         {#each task.tiles ?? [] as tile, i}
           <button
@@ -163,12 +164,19 @@
           >{tile}</button>
         {/each}
       </div>
-      <div class="row" style="margin-top: 0.9rem; gap: 0.5rem;">
-        <button onclick={undo} disabled={revealed || built.length === 0} style="flex: 1;">Undo</button>
-        <button class="btn-primary" onclick={checkSpelling} disabled={revealed || built.length === 0} style="flex: 2;">
-          Check
-        </button>
-      </div>
+      {#if !revealed}
+        <!-- Hidden rather than disabled once the word is complete: leaving
+             a dead Check button on screen next to the grade buttons reads
+             as two competing next steps. -->
+        <div class="row" style="margin-top: 0.9rem; gap: 0.5rem;">
+          <button onclick={undo} disabled={built.length === 0} style="flex: 1;">Undo</button>
+          <button class="btn-primary" onclick={checkSpelling} disabled={built.length === 0} style="flex: 2;">
+            Check
+          </button>
+        </div>
+      {:else if spellDone}
+        <p class="small center" style="color: var(--good); margin: 0.9rem 0 0;">✓ Correct</p>
+      {/if}
     </div>
   {:else if task.options}
     <div style="margin-top: 1rem;" data-answer={SHOW_DRAFTS ? task.answer : undefined}>
