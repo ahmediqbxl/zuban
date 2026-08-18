@@ -2,8 +2,8 @@
 
 **জবান** · *zubān* — Urdu/Persian for "tongue", in both senses: the organ and the language.
 
-A mobile-first web app for learning languages the big platforms ignore.
-First course: **Bangla (bn-BD)**.
+Learn a language with Zuban — a mobile-first web app for the languages the
+big platforms ignore. First course: **Bangla (bn-BD)**.
 
 Bangla has ~270 million speakers — 6th or 7th most spoken language on
 earth — and no Duolingo course for English speakers. Duolingo's April 2025
