@@ -5,7 +5,11 @@
 # Remove that variable once the course has been through native review.
 
 [build]
-  command = "npm run build:content && npm run build"
+  # Order matters. build:content regenerates course.json and fails loudly on
+  # a content error; the tests then validate the freshly built graph rather
+  # than the committed copy; only then do we build the site. A failing test
+  # aborts the deploy, so the live URL keeps serving the last good build.
+  command = "npm run build:content && npm test && npm run build"
   publish = "build"
 
 [build.environment]
