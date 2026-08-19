@@ -22,6 +22,12 @@ import { computeStats, type DayRow, type Stats } from './stats';
 import * as local from '$db/local';
 import { clusters } from '$content/scripts/bengali';
 import { speech } from './speech.svelte';
+import { SOUND_GROUPS, TRICKY } from '$course/bn/sounds';
+
+/** roman -> the one-line tip from the pronunciation guide. */
+const TIP_BY_ROMAN = new Map<string, string>(
+  SOUND_GROUPS.flatMap((g) => g.sounds.map((s) => [s.roman, s.tip] as const))
+);
 
 /**
  * Show content no native speaker has reviewed?
@@ -117,6 +123,13 @@ export interface Task {
   roman?: string;
   /** Self-graded rather than multiple choice. */
   selfGraded?: boolean;
+  /**
+   * Sounds in this item that an English speaker reliably gets wrong.
+   *
+   * Shown on reveal, not before — the point is to produce first and then
+   * correct, and a wall of phonetics before the attempt just gets skipped.
+   */
+  pronunciation?: Array<{ roman: string; tip: string }>;
 }
 
 class SessionState {
@@ -350,7 +363,8 @@ class SessionState {
           bangla: l.form,
           audio: l.audio,
           selfGraded: true,
-          note: l.gloss.slice(1).join(', ') || undefined
+          note: l.gloss.slice(1).join(', ') || undefined,
+          pronunciation: this.hintsFor([l.id])
         };
       }
 
@@ -422,7 +436,8 @@ class SessionState {
         roman: s.roman,
         bangla: s.form,
         audio: s.audio,
-        selfGraded: true
+        selfGraded: true,
+        pronunciation: this.hintsFor(s.lexemes)
       };
     }
 
@@ -621,6 +636,32 @@ class SessionState {
     if (task.selfGraded) return true;
     if (task.kind === 'word-spell') return (task.tiles?.length ?? 0) > 0;
     return (task.options?.length ?? 0) > 1;
+  }
+
+  /**
+   * Pronunciation hints for the sounds in a word or sentence.
+   *
+   * Capped at two. A speaking learner with no audio needs the dental/
+   * retroflex distinction pointed out; they do not need six notes per
+   * card, which nobody reads.
+   */
+  private hintsFor(lexemeIds: string[]): Array<{ roman: string; tip: string }> {
+    const seen = new Set<string>();
+    const out: Array<{ roman: string; tip: string }> = [];
+    for (const lid of lexemeIds) {
+      const lex = lexemeById.get(lid);
+      if (!lex) continue;
+      for (const gid of lex.glyphs) {
+        const g = glyphById.get(gid);
+        if (!g || !TRICKY.has(g.roman) || seen.has(g.roman)) continue;
+        const tip = TIP_BY_ROMAN.get(g.roman);
+        if (!tip) continue;
+        seen.add(g.roman);
+        out.push({ roman: g.roman, tip });
+        if (out.length >= 2) return out;
+      }
+    }
+    return out;
   }
 
   private isKnown(tier: TargetTier, id: string) {

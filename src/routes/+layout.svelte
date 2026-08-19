@@ -12,7 +12,11 @@
   const tabs = $derived([
     { href: '/', label: 'Today' },
     { href: '/learn', label: 'Learn' },
-    ...(session.track.script ? [{ href: '/script', label: 'Script' }] : []),
+    // Script learners get the font-rendering check; speaking learners get
+    // the pronunciation guide, which is the equivalent reference for them.
+    session.track.script
+      ? { href: '/script', label: 'Script' }
+      : { href: '/sounds', label: 'Sounds' },
     { href: '/you', label: 'You' }
   ]);
 

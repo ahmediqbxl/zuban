@@ -115,6 +115,19 @@
           {#if showScript}
             <p class="bn bn-md muted" style="margin: 0;">{task.bangla}</p>
           {/if}
+          {#if task.pronunciation?.length}
+            <!-- After the attempt, never before: produce first, then
+                 correct. Shown here because with no audio the spelling
+                 alone cannot convey these. -->
+            <div style="margin-top: 0.8rem;">
+              {#each task.pronunciation as hint}
+                <p class="small muted" style="margin: 0 0 0.35rem;">
+                  <strong style="color: var(--accent);">{hint.roman}</strong> — {hint.tip}
+                </p>
+              {/each}
+              <a href="{base}/sounds" class="faint small" style="text-decoration: underline;">More on sounds</a>
+            </div>
+          {/if}
         </div>
       {/if}
 
