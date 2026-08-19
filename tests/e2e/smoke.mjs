@@ -26,6 +26,16 @@ import { chromium } from 'playwright';
 const args = process.argv.slice(2);
 const PROD = args.includes('--prod');
 const SPEAKING = args.includes('--speaking');
+/**
+ * Answer everything WRONG on purpose.
+ *
+ * Every other mode answers correctly using the dev hook, which hid a bug
+ * for a long time: a wrong answer leaves the item unknown, so it stayed
+ * the sequencer's top candidate and was served again immediately —
+ * pinning the learner to one word forever. Real learners get things
+ * wrong constantly, so this path needs its own test.
+ */
+const WRONG = args.includes('--wrong');
 const PORT = args.includes('--port') ? args[args.indexOf('--port') + 1] : PROD ? '5192' : '5190';
 const URL = `http://127.0.0.1:${PORT}`;
 const SHOTS = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : null;
@@ -106,7 +116,7 @@ page.on('console', (m) => {
   }
 });
 
-console.log(`\n${PROD ? 'PRODUCTION' : SPEAKING ? 'SPEAKING-ONLY' : 'DEV (script track)'} smoke test against ${URL}\n`);
+console.log(`\n${PROD ? 'PRODUCTION' : WRONG ? 'WRONG-ANSWERS' : SPEAKING ? 'SPEAKING-ONLY' : 'DEV (script track)'} smoke test against ${URL}\n`);
 
 if (PROD) {
   // ── Production: the review gate and offline support ───────────────
@@ -155,6 +165,53 @@ if (PROD) {
     }
   });
   await ctx.setOffline(false);
+
+} else if (WRONG) {
+  // ── Deliberately wrong answers ────────────────────────────────────
+  await page.goto(URL + '/', { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1500);
+  await page.locator('a.btn-primary').first().click();
+  await page.waitForTimeout(900);
+  await page.locator('button', { hasText: 'I want to speak it' }).click();
+  await page.waitForTimeout(1600);
+
+  const seen = new Set();
+  let repeats = 0, prev = null;
+  for (let i = 0; i < 25; i++) {
+    const card = (await page.locator('.card').first().innerText()).trim();
+    if (card === prev) repeats++;
+    prev = card;
+    seen.add(card);
+
+    const say = page.locator('button', { hasText: 'Show me' });
+    if (await say.count()) {
+      await say.click();
+      await page.waitForTimeout(200);
+      const noIdea = page.locator('button', { hasText: 'No idea' });
+      if (await noIdea.count()) await noIdea.click();
+    } else {
+      const holder = page.locator('[data-answer]');
+      if ((await holder.count()) === 0) break;
+      const answer = (await holder.getAttribute('data-answer')).trim();
+      const choices = page.locator('button.choice');
+      const texts = (await choices.allTextContents()).map((t) => t.trim());
+      // Deliberately pick something that is NOT the answer.
+      const idx = texts.findIndex((t) => t !== answer);
+      if (idx < 0) break;
+      if (!(await choices.nth(idx).isEnabled())) break;
+      await choices.nth(idx).click();
+    }
+    await page.waitForTimeout(320);
+  }
+
+  console.log(`    ${seen.size} distinct cards reached, ${repeats} immediate repeats`);
+  await shot(page, 'wrong-answers');
+  await step('a learner who gets everything wrong still progresses', () => {
+    if (seen.size < 8) throw new Error(`stuck after ${seen.size} distinct cards`);
+  });
+  await step('the same card is never served twice in a row', () => {
+    if (repeats > 0) throw new Error(`${repeats} immediate repeats`);
+  });
 
 } else if (SPEAKING) {
   // ── Speaking-only: no script anywhere ─────────────────────────────

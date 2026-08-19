@@ -1,0 +1,6 @@
+# SPA fallback.
+#
+# Lives in the build output rather than only in netlify.toml so that a
+# drag-and-drop deploy — which never reads netlify.toml — still resolves
+# /learn, /you and every other client-side route instead of 404ing.
+/*    /index.html   200

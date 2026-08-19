@@ -14,8 +14,8 @@ import {
   type ExerciseKind, type Grade, type ItemKey, type ReviewItem, type TargetTier
 } from '$engine/scheduler';
 import {
-  ContentGraph, TRACKS, emptyKnowledge, nextItem,
-  type Knowledge, type TrackConfig
+  ContentGraph, TRACKS, candidates, emptyKnowledge, nextItem,
+  type Candidate, type Knowledge, type TrackConfig
 } from '$engine/sequencer';
 import { buildCoverageModel, coverage, scriptCoverage, readableSentences } from '$engine/coverage';
 import { computeStats, type DayRow, type Stats } from './stats';
@@ -134,6 +134,16 @@ class SessionState {
   days = $state<DayRow[]>([]);
   /** Exercise kinds the sequencer planned per item, pending seeding. */
   private plannedFor = new Map<string, ExerciseKind[]>();
+  /**
+   * The card just answered.
+   *
+   * Used to avoid serving it again as the very next card. Getting an item
+   * wrong leaves it unknown, so the sequencer's top candidate is still the
+   * same item — without this the learner is pinned to one word, seeing it
+   * over and over with no way forward, which is precisely what happens to
+   * a real learner and never to a test that answers correctly.
+   */
+  private lastServed: ItemKey | null = null;
 
   async load() {
     const [items, known, profile, days] = await Promise.all([
@@ -197,13 +207,39 @@ class SessionState {
     const now = new Date();
     const due = dueQueue([...this.items.values()], this.scheduler, now, 8);
     for (const item of due) {
+      // Never the card just answered — see `lastServed`.
+      if (item.key === this.lastServed) continue;
       const task = this.buildTask(item.key, false);
       if (task && this.isAnswerable(task)) {
-        this.current = task;
+        this.serve(task);
         return;
       }
     }
-    const next = nextItem(graph, this.known, this.track);
+    // Ask for ranked candidates rather than just the top one, so an item
+    // answered incorrectly — still unknown, so still the highest scorer —
+    // can be stepped over in favour of the next best.
+    const ranked = candidates(graph, this.known, this.track, 1);
+    const pool = ranked.length > 0 ? ranked : (() => {
+      const n = nextItem(graph, this.known, this.track);
+      return n ? [n] : [];
+    })();
+
+    // Skip anything already introduced.
+    //
+    // Once a card exists for an item, FSRS owns when it comes back; the
+    // sequencer's job is introducing material the learner has not met.
+    // Without this an item answered incorrectly stays fully unknown, so it
+    // remains the top-ranked "new" candidate and is offered again
+    // immediately — the learner ping-pongs between two words forever
+    // instead of moving through the course.
+    let next = pool.find((c) => !this.isIntroduced(c.tier, c.id));
+
+    // Everything left has been introduced: nothing new to teach right now,
+    // so fall back to the highest-ranked item that is not the card just
+    // answered, and finally to whatever is left.
+    next ??= pool.find((c) => !c.exercises.some((k) => itemKey(c.tier, c.id, k) === this.lastServed));
+    next ??= pool[0];
+
     if (!next) {
       this.current = null;
       return;
@@ -213,9 +249,11 @@ class SessionState {
     // rest are seeded once this one is answered, so a word gets drilled
     // from several angles rather than only the first that happened to fit.
     for (const kind of next.exercises) {
-      const task = this.buildTask(itemKey(next.tier, next.id, kind), true);
+      const key = itemKey(next.tier, next.id, kind);
+      if (key === this.lastServed) continue;
+      const task = this.buildTask(key, true);
       if (task && this.isAnswerable(task)) {
-        this.current = task;
+        this.serve(task);
         this.plannedFor.set(`${next.tier}:${next.id}`, next.exercises);
         return;
       }
@@ -566,6 +604,19 @@ class SessionState {
    * card with no tiles, is a dead end that strands the session. Better to
    * skip it than to render something unanswerable.
    */
+  /** Has any exercise for this item ever been scheduled? */
+  private isIntroduced(tier: TargetTier, id: string): boolean {
+    const prefix = `${tier}:${id}:`;
+    for (const key of this.items.keys()) if (key.startsWith(prefix)) return true;
+    return false;
+  }
+
+  /** Set the current card and remember it, so it is not served twice running. */
+  private serve(task: Task) {
+    this.current = task;
+    this.lastServed = itemKey(task.tier, task.id, task.kind);
+  }
+
   private isAnswerable(task: Task): boolean {
     if (task.selfGraded) return true;
     if (task.kind === 'word-spell') return (task.tiles?.length ?? 0) > 0;
