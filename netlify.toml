@@ -15,6 +15,15 @@
 [build.environment]
   NODE_VERSION = "22"
   ZUBAN_SHOW_DRAFTS = "1"
+  # Force devDependencies to install.
+  #
+  # If NODE_ENV=production is ever set on the site — by hand, or by a
+  # framework preset — npm ci silently skips devDependencies, and both
+  # vitest and vite live there. The build then fails with "vite: not
+  # found", which reads like a broken repo rather than a config setting.
+  # Verified: with NODE_ENV=production this flag is what makes the
+  # difference between the whole build failing and it passing.
+  NPM_FLAGS = "--include=dev"
 
 # The app is a hash-free SPA served from static files, so every unknown
 # path has to fall through to the shell for client-side routing to work.
