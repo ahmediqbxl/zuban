@@ -38,14 +38,60 @@ the only thing that makes this content trustworthy.
 drafts are shown behind a visible warning banner so the app is buildable
 before review is complete.
 
-To review an entry:
+### Handing it to a native speaker
 
-1. Read it against your own usage. Check the Bangla, the romanization,
-   the gloss, and the register (is this how someone actually says it?).
-2. Correct it in `source.ts`.
-3. Change its `provenance.status` from `draft` to `reviewed` and add your
-   name as `reviewer`.
-4. `npm run build:content && npm test`
+Review needs no git, no editor and no programming — a spreadsheet is
+enough. That is deliberate: the blocker on this course is a Bangla
+speaker's time, and requiring them to edit TypeScript rules out nearly all
+of them.
+
+```bash
+npm run review:export -- --limit 100     # commonest words first
+```
+
+That writes `content/bn/review.csv`, which opens in Excel, Numbers or
+Google Sheets. Rows are ordered by frequency, so a partial review still
+covers the words a learner meets most. Send it to the reviewer with these
+instructions:
+
+> Fill in the **verdict** column for each row:
+> - `ok` — correct as written
+> - `fix` — wrong; put the correction in the `*_fixed` columns
+> - `drop` — wrong or not worth teaching; it will be removed
+>
+> Only fill a `*_fixed` column if you are changing that field. Use **note**
+> for anything worth explaining — register, dialect, when you'd actually
+> say it. Leave the verdict blank if you are unsure; blank means unreviewed,
+> and unreviewed content is withheld from learners.
+
+When it comes back:
+
+```bash
+npm run review:import -- reviewed.csv --reviewer "Their Name"
+npm run build:content
+```
+
+The importer validates before writing and reports anything it rejected —
+a `fix` with no correction, an `ok` with one, a row whose word is no longer
+in the course. Rejected rows are not imported; fix and re-run, since import
+merges rather than replaces.
+
+### How it fits together
+
+Corrections land in `content/bn/review.json`, **not** in `source.ts`. The
+hand-authored draft stays hand-authored, so a bad import cannot damage it,
+several reviewers merge without conflict, and provenance is derived from
+who actually signed off rather than asserted by a literal in the build
+script.
+
+`build:content` applies the overlay *before* deriving glyphs and spans — a
+corrected spelling has different letters, so correcting afterwards would
+leave a word carrying the old word's dependencies. It then prints progress:
+
+```
+  review    7/420 checked (4 ok, 2 corrected, 1 dropped)
+            → 6 record(s) would reach learners in production
+```
 
 Things most likely to be wrong, in rough order:
 
@@ -53,10 +99,11 @@ Things most likely to be wrong, in rough order:
   drifts most. Check আছ / আছেন / আছে especially.
 - **Register mismatch.** Sentences may read as সাধু (literary) where
   চলিত (colloquial) is intended.
-- **Frequency ranks.** These are estimates, not corpus-derived. They drive
-  teaching order, so bad ranks mean a bad course sequence.
-- **Romanization consistency.** The scheme favours bn-BD pronunciation
-  over reversibility; entries drafted at different times may disagree.
+- **Romanization vs actual pronunciation.** The scheme favours how a Dhaka
+  speaker says a word over reversibility; entries drafted at different
+  times may disagree.
+- **Frequency ranks.** Estimates, not corpus-derived. They drive teaching
+  order, so bad ranks mean a bad course sequence.
 
 ## Teaching order
 

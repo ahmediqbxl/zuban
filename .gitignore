@@ -8,3 +8,9 @@ dist/
 *.log
 .DS_Store
 static/audio/generated/
+
+# Review working files. The CSV is a scratch hand-off to a reviewer; the
+# resulting review.json IS committed, because it is the record of who
+# approved what.
+content/*/review.csv
+content/*/review-*.csv

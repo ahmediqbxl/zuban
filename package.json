@@ -20,7 +20,10 @@
     "test:e2e": "node tests/e2e/smoke.mjs",
     "test:e2e:prod": "node tests/e2e/smoke.mjs --prod",
     "test:e2e:speaking": "node tests/e2e/smoke.mjs --speaking",
-    "test:e2e:wrong": "node tests/e2e/smoke.mjs --wrong"
+    "test:e2e:wrong": "node tests/e2e/smoke.mjs --wrong",
+    "review:export": "node scripts/review-export.mjs",
+    "review:import": "node scripts/review-import.mjs",
+    "review:status": "tsx scripts/build-content.ts"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.6",

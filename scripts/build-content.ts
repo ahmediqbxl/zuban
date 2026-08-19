@@ -25,6 +25,9 @@ import { LEXEMES, SENTENCES, NOTES } from '../content/bn/source.ts';
 import type {
   Course, Glyph, Lexeme, Sentence, GrammarNote, Provenance
 } from '../src/lib/content/schema.ts';
+import {
+  applyReview, indexReview, reviewId, reviewStats, type ReviewFile
+} from '../src/lib/content/review.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(HERE, '../content/bn/course.json');
@@ -46,6 +49,44 @@ function audioFor(text: string): string | undefined {
 
 /** Nothing here has been through native review yet. Say so, in the data. */
 const DRAFT: Provenance = { status: 'draft', source: 'llm:claude' };
+
+// --- Review overlay ---------------------------------------------------------
+//
+// Corrections from a native speaker live in review.json, keyed by a hash of
+// the original text. They are applied to the source rows *before* glyphs
+// and spans are derived — a corrected spelling has different letters, so
+// deriving first and correcting after would leave a word carrying the old
+// word's dependencies.
+const REVIEW_PATH = resolve(HERE, '../content/bn/review.json');
+const review: ReviewFile | null = existsSync(REVIEW_PATH)
+  ? (JSON.parse(readFileSync(REVIEW_PATH, 'utf-8')) as ReviewFile)
+  : null;
+const reviewIndex = indexReview(review);
+const sha1 = (x: string) => createHash('sha1').update(x).digest('hex');
+
+/**
+ * Resolve one drafted record against the overlay.
+ *
+ * Returns null when a reviewer marked it `drop` — wrong or not worth
+ * teaching — so it never reaches the course at all.
+ */
+function resolveReview(
+  kind: 'lexeme' | 'sentence',
+  bangla: string,
+  roman: string,
+  english: string
+): { bangla: string; roman: string; english: string; provenance: Provenance } | null {
+  const entry = reviewIndex.get(reviewId(kind, bangla, sha1));
+  const applied = applyReview({ bangla: bangla.normalize('NFC'), roman, english }, entry);
+  if (applied.dropped) return null;
+  return {
+    ...applied.record,
+    provenance:
+      applied.status === 'reviewed'
+        ? { status: 'reviewed', reviewer: applied.reviewer, source: 'llm:claude' }
+        : DRAFT
+  };
+}
 
 /**
  * Bangla inflectional suffixes, longest first.
@@ -79,20 +120,27 @@ function tokenize(sentence: string): string[] {
 
 // ---------------------------------------------------------------------------
 
-function build(): { course: Course; gaps: string[] } {
+function build(): { course: Course; gaps: string[]; dropped: number } {
   // --- Lexemes -------------------------------------------------------------
-  const lexemes: Lexeme[] = LEXEMES.map(([form, roman, gloss, pos, freqRank]) => ({
-    id: `bn-lex-${roman.replace(/[^a-z]/gi, '')}-${freqRank}`,
-    form: form.normalize('NFC'),
-    roman,
-    gloss: gloss.split(/,\s*/),
-    pos: pos as Lexeme['pos'],
-    freqRank,
-    glyphs: glyphsOf(form),
-    register: 'cholito',
-    audio: audioFor(form.normalize('NFC')),
-    provenance: DRAFT
-  }));
+  let droppedLexemes = 0;
+  const lexemes: Lexeme[] = LEXEMES.flatMap(([form, roman, gloss, pos, freqRank]) => {
+    const r = resolveReview('lexeme', form, roman, gloss);
+    if (!r) { droppedLexemes++; return []; }
+    return [{
+      // The id stays keyed to the *original* romanization so a correction
+      // does not orphan a learner's existing review history for the word.
+      id: `bn-lex-${roman.replace(/[^a-z]/gi, '')}-${freqRank}`,
+      form: r.bangla,
+      roman: r.roman,
+      gloss: r.english.split(/,\s*/),
+      pos: pos as Lexeme['pos'],
+      freqRank,
+      glyphs: glyphsOf(r.bangla),
+      register: 'cholito' as const,
+      audio: audioFor(r.bangla),
+      provenance: r.provenance
+    }];
+  });
 
   const byForm = new Map<string, Lexeme>();
   for (const l of lexemes) byForm.set(l.form, l);
@@ -133,8 +181,11 @@ function build(): { course: Course; gaps: string[] } {
   const gaps = new Set<string>();
   const sentences: Sentence[] = [];
 
+  let droppedSentences = 0;
   SENTENCES.forEach(([form, roman, gloss, level], i) => {
-    const nf = form.normalize('NFC');
+    const r = resolveReview('sentence', form, roman, gloss);
+    if (!r) { droppedSentences++; return; }
+    const nf = r.bangla;
     const ids: string[] = [];
     const spans: Sentence['spans'] = [];
     let cursor = 0;
@@ -155,13 +206,13 @@ function build(): { course: Course; gaps: string[] } {
     sentences.push({
       id: `bn-sent-${String(i + 1).padStart(3, '0')}`,
       form: nf,
-      roman,
-      gloss,
+      roman: r.roman,
+      gloss: r.english,
       lexemes: [...new Set(ids)],
       spans,
       level,
       audio: audioFor(nf),
-      provenance: DRAFT
+      provenance: r.provenance
     });
   });
 
@@ -226,12 +277,12 @@ function build(): { course: Course; gaps: string[] } {
     notes
   };
 
-  return { course, gaps: [...gaps].sort() };
+  return { course, gaps: [...gaps].sort(), dropped: droppedLexemes + droppedSentences };
 }
 
 // ---------------------------------------------------------------------------
 
-const { course, gaps } = build();
+const { course, gaps, dropped } = build();
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(course, null, 2) + '\n', 'utf-8');
 
@@ -243,6 +294,22 @@ console.log(`  glyphs    ${course.glyphs.length}  (${conjuncts.length} conjuncts
 console.log(`  lexemes   ${course.lexemes.length}`);
 console.log(`  sentences ${course.sentences.length}`);
 console.log(`  notes     ${course.notes.length}`);
+
+// --- Review progress --------------------------------------------------------
+const reviewable = course.lexemes.length + course.sentences.length + dropped;
+const stats = reviewStats(reviewable, reviewIndex);
+const shippable =
+  course.lexemes.filter((l) => l.provenance.status !== 'draft').length +
+  course.sentences.filter((s) => s.provenance.status !== 'draft').length;
+
+console.log(`  review    ${stats.reviewed}/${reviewable} checked ` +
+  `(${stats.ok} ok, ${stats.fixed} corrected, ${stats.dropped} dropped)`);
+if (shippable === 0) {
+  console.log('            → nothing is native-reviewed, so a production build');
+  console.log('              ships an empty course. Run: npm run review:export');
+} else {
+  console.log(`            → ${shippable} record(s) would reach learners in production`);
+}
 
 const withAudio =
   course.lexemes.filter((l) => l.audio).length + course.sentences.filter((s) => s.audio).length;
