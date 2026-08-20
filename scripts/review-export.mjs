@@ -77,21 +77,69 @@ const lines = [
 // mojibake — which makes the file useless to the exact person it is for.
 writeFileSync(out, '﻿' + lines.join('\r\n') + '\r\n', 'utf-8');
 
+/**
+ * Write the instructions next to the sheet.
+ *
+ * They used to exist only as console output, which meant whoever ran the
+ * export had to remember to relay them. A reviewer who receives the CSV on
+ * its own has no way to know what the verdict column wants.
+ */
+const instructionsPath = out.replace(/\.csv$/, '-instructions.txt');
+writeFileSync(instructionsPath, `Reviewing the Zuban Bangla course
+==================================
+
+Thank you — this is the one part of the project that cannot be automated.
+
+WHAT THIS IS
+Every Bangla word and phrase in the course was drafted by an AI and has
+NOT been checked by a Bangla speaker. Until someone does, none of it is
+shown to learners. That is deliberate: teaching mistakes is worse than
+teaching nothing.
+
+The course teaches BANGLADESHI colloquial Bangla (cholito bhasha, Dhaka)
+- so পানি rather than জল. Please judge it by that standard.
+
+WHAT TO DO
+Open the .csv in Excel, Numbers or Google Sheets. For each row, fill in
+the "verdict" column with one of:
+
+  ok    - correct as written, nothing to change
+  fix   - wrong; put the correction in the *_fixed columns
+  drop  - wrong, unnatural, or not worth teaching; it gets removed
+
+Only fill a *_fixed column if you are changing that field. If the Bangla
+is right but the English is wrong, only fill english_fixed.
+
+Use "note" for anything worth explaining - if a phrase is too formal, or
+something you would only say to family, or a word that is regional.
+
+IF YOU ARE UNSURE, LEAVE THE VERDICT BLANK. Blank means "not reviewed",
+and unreviewed content stays hidden from learners. A blank row is far
+more useful than a guess.
+
+HOW MUCH
+Rows are ordered by how common the word is, so the first ones matter
+most. Stopping partway through is genuinely useful - the first 50 rows
+reviewed beats 400 rows guessed at.
+
+WHAT TO LOOK FOR
+The drafting AI is most likely to be wrong about:
+  - Verb endings, especially politeness (আছ / আছেন / আছে)
+  - Register - writing sadhu (formal/literary) where cholito (spoken) belongs
+  - Whether the romanization matches how it is actually pronounced
+  - Phrases that are grammatically fine but nobody would actually say
+
+When you are done, send the file back.
+`, 'utf-8');
+
+
 console.log(`wrote ${out}`);
 console.log(`  ${rows.length} rows (${rows.filter((r) => r.kind === 'lexeme').length} words, ${rows.filter((r) => r.kind === 'sentence').length} sentences)`);
 if (done.size) console.log(`  ${done.size} already reviewed${pendingOnly ? ' (excluded)' : ' (included — use --pending to skip)'}`);
+console.log(`wrote ${instructionsPath}`);
 console.log(`
-Give this to a Bangla speaker with these instructions:
+Send BOTH files to a Bangla speaker — the instructions explain the verdict
+column, which is not self-evident from the sheet alone.
 
-  Fill in the 'verdict' column for each row:
-    ok    — correct as written, nothing to change
-    fix   — wrong; put the correction in the *_fixed columns
-    drop  — wrong or not worth teaching; it will be removed
-
-  Only fill a *_fixed column if you are changing that field.
-  Use 'note' for anything worth explaining (register, dialect, context).
-
-  Leave a row's verdict blank if you are unsure — blank means unreviewed,
-  and unreviewed content is withheld from learners.
-
-Then: node scripts/review-import.mjs ${out} --reviewer "Their Name"`);
+When it comes back:
+  node scripts/review-import.mjs ${out} --reviewer "Their Name"`);
