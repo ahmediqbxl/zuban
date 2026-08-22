@@ -30,8 +30,11 @@
     return { before: task.prompt.slice(0, task.blank.start), after: task.prompt.slice(task.blank.end) };
   });
 
-  const builtWord = $derived(built.join(''));
-  const spellDone = $derived(task?.kind === 'word-spell' && builtWord === task.answer);
+  const isTileTask = $derived(task?.kind === 'word-spell' || task?.kind === 'build-sentence');
+  /** Letters butt together; words need a space between them. */
+  const tileJoin = $derived(task?.kind === 'build-sentence' ? ' ' : '');
+  const builtWord = $derived(built.join(tileJoin));
+  const spellDone = $derived(isTileTask && builtWord === task?.answer);
   const canGrade = $derived(revealed && (isCorrect || spellDone || isSpeaking));
 
   $effect(() => {
@@ -51,7 +54,7 @@
     if (revealed) return;
     built = [...built, tile];
     spellWrong = false;
-    if (built.join('') === task?.answer) revealed = true;
+    if (built.join(tileJoin) === task?.answer) revealed = true;
   }
 
   function undo() { built = built.slice(0, -1); spellWrong = false; }
@@ -98,6 +101,7 @@
       {:else if task.kind === 'glyph-sound'}How is this letter pronounced?
       {:else if task.kind === 'word-read' || task.kind === 'word-recall'}What does this mean?
       {:else if task.kind === 'word-spell'}Spell this word in Bangla
+      {:else if task.kind === 'build-sentence'}Put the words in the right order
       {:else if task.kind === 'cloze' || task.kind === 'cloze-roman'}Which word completes it?
       {:else if task.kind === 'word-listen'}Which word did you hear?
       {:else if task.kind === 'sentence-listen'}What did you hear?
@@ -129,6 +133,22 @@
             </div>
           {/if}
         </div>
+      {/if}
+
+    {:else if task.kind === 'build-sentence'}
+      <p style="margin: 0 0 0.9rem; font-size: 1.3rem; line-height: 1.35;">{task.prompt}</p>
+      <div
+        class={showScript ? 'bn bn-md' : 'roman-prompt'}
+        style="min-height: 3.4rem; border-bottom: 2px dashed var(--border); padding-bottom: 0.3rem;"
+        aria-live="polite"
+      >{builtWord}</div>
+      {#if spellWrong}
+        <p class="small" style="color: var(--bad); margin: 0.5rem 0 0;">
+          Not that order — it's <strong class={showScript ? 'bn' : ''}>{task.answer}</strong>
+        </p>
+        <p class="faint small" style="margin: 0.3rem 0 0;">
+          Bangla puts the verb last — <em>I rice eat</em>, not <em>I eat rice</em>.
+        </p>
       {/if}
 
     {:else if task.kind === 'word-spell'}
@@ -164,7 +184,7 @@
     {#if glyph?.prebase}
       <p class="small prebase" style="margin: 0.2rem 0 0;">⚠ Written <strong>before</strong> its consonant, but pronounced after it.</p>
     {/if}
-    {#if revealed && task.note && task.kind !== 'word-spell' && !clozeParts && !isSpeaking}
+    {#if revealed && task.note && !isTileTask && !clozeParts && !isSpeaking}
       <p class="muted small" style="margin: 0.5rem 0 0;">{task.note}</p>
     {/if}
   </div>
@@ -201,11 +221,16 @@
     <button class="btn-primary" onclick={revealAndHear} style="width: 100%; margin-top: 1rem;">
       Show me
     </button>
-  {:else if task.kind === 'word-spell'}
+  {:else if isTileTask}
     <div style="margin-top: 1rem;" data-answer={SHOW_DRAFTS ? task.answer : undefined}>
       <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
         {#each task.tiles ?? [] as tile}
-          <button class="bn" style="font-size: 1.5rem; padding: 0.55rem 0.9rem; min-width: 3.2rem;" onclick={() => tapTile(tile)} disabled={revealed}>{tile}</button>
+          <button
+            class={task.kind === 'build-sentence' ? (showScript ? 'bn' : '') : 'bn'}
+            style="font-size: {task.kind === 'build-sentence' ? '1.1rem' : '1.5rem'}; padding: 0.55rem 0.9rem;"
+            onclick={() => tapTile(tile)}
+            disabled={revealed}
+          >{tile}</button>
         {/each}
       </div>
       {#if !revealed}

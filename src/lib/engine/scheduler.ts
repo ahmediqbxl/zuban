@@ -34,6 +34,16 @@ export type ExerciseKind =
   // --- script-free -------------------------------------------------------
   | 'word-recall'      // see romanization -> meaning
   | 'cloze-roman'      // romanized sentence, one word removed
+  /**
+   * Assemble the whole sentence from shuffled word tiles.
+   *
+   * The one exercise that trains word order. Bangla is subject-object-verb
+   * — আমি ভাত খাই is "I rice eat" — and an English speaker gets that wrong
+   * by default. Recall of a memorised phrase never surfaces the error, and
+   * a single-blank cloze hands the learner the frame for free, so neither
+   * teaches the thing that lets you say a sentence you have not met.
+   */
+  | 'build-sentence'
   // --- listening ---------------------------------------------------------
   | 'word-listen'      // hear a word     -> pick meaning
   | 'sentence-listen'  // hear a sentence -> pick meaning

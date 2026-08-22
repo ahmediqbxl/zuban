@@ -441,6 +441,45 @@ class SessionState {
       };
     }
 
+    if (kind === 'build-sentence') {
+      // Tiles are the sentence's own words, shuffled, plus a few decoys.
+      // Script learners assemble the Bangla; speaking learners assemble
+      // the romanization, since the point is word order either way.
+      const useScript = this.track.script;
+      const strip = (t: string) => t.replace(/[।?!,;:.]/g, '').trim();
+      const correct = (useScript ? s.form : s.roman)
+        .split(/\s+/)
+        .map(strip)
+        .filter(Boolean);
+      if (correct.length < 2) return null; // nothing to order
+
+      const decoyPool = course.sentences
+        .filter((x) => x.id !== s.id)
+        .flatMap((x) => (useScript ? x.form : x.roman).split(/\s+/).map(strip))
+        .filter(Boolean);
+      const decoys = [...new Set(decoyPool)]
+        .filter((w) => !correct.includes(w))
+        .slice(0, Math.min(3, Math.max(1, Math.floor(correct.length / 2))));
+
+      // Deterministic shuffle so tiles do not reorder on every rerender.
+      const h = [...s.id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 17);
+      const tiles = [...correct, ...decoys].sort((a, b) => {
+        const ha = [...a].reduce((x, c) => (x * 31 + c.charCodeAt(0)) >>> 0, h) % 9973;
+        const hb = [...b].reduce((x, c) => (x * 31 + c.charCodeAt(0)) >>> 0, h) % 9973;
+        return ha - hb;
+      });
+
+      return {
+        kind, tier, id, isNew,
+        prompt: s.gloss,
+        answer: correct.join(' '),
+        tiles,
+        bangla: s.form,
+        audio: s.audio,
+        note: useScript ? s.roman : undefined
+      };
+    }
+
     if (kind === 'cloze-roman' && s.spans.length > 0) {
       // Romanized cloze: tests sentence construction without the script.
       const target =
@@ -634,7 +673,9 @@ class SessionState {
 
   private isAnswerable(task: Task): boolean {
     if (task.selfGraded) return true;
-    if (task.kind === 'word-spell') return (task.tiles?.length ?? 0) > 0;
+    if (task.kind === 'word-spell' || task.kind === 'build-sentence') {
+      return (task.tiles?.length ?? 0) > 0;
+    }
     return (task.options?.length ?? 0) > 1;
   }
 

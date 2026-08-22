@@ -62,11 +62,27 @@ async function answerCard(page) {
   const holder = page.locator('[data-answer]');
   const isSay = (await page.locator('button', { hasText: 'Show me' }).count()) > 0;
   const isSpell = (await page.locator('button', { hasText: 'Check' }).count()) > 0;
+  // Both use tiles and a Check button; the prompt distinguishes them.
+  const prompt = await page.locator('.card .muted.small').first().textContent().catch(() => '');
+  const isBuild = isSpell && /right order/i.test(prompt ?? '');
 
   if (isSay) {
     // Spoken production: reveal, then self-grade.
     await page.locator('button', { hasText: 'Show me' }).click();
     await page.waitForTimeout(220);
+  } else if (isBuild) {
+    if ((await holder.count()) === 0) return null;
+    const answer = await holder.getAttribute('data-answer');
+    for (const word of answer.split(' ')) {
+      const esc = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const tile = page.locator('[data-answer] button').filter({ hasText: new RegExp(`^\\s*${esc}\\s*$`) }).first();
+      if ((await tile.count()) === 0) break;
+      await tile.click();
+      await page.waitForTimeout(60);
+    }
+    const check = page.locator('button', { hasText: 'Check' });
+    if ((await check.count()) && (await check.isEnabled())) await check.click();
+    await page.waitForTimeout(180);
   } else if (isSpell) {
     if ((await holder.count()) === 0) return null;
     const answer = await holder.getAttribute('data-answer');
@@ -101,7 +117,7 @@ async function answerCard(page) {
   const graded = (await grade.count()) > 0;
   if (graded) await grade.click();
   await page.waitForTimeout(150);
-  return { kind: isSay ? 'say' : isSpell ? 'spell' : 'choice', graded };
+  return { kind: isSay ? 'say' : isBuild ? 'build' : isSpell ? 'spell' : 'choice', graded };
 }
 
 const browser = await chromium.launch({ executablePath: EXE });
@@ -231,7 +247,7 @@ if (PROD) {
   await shot(page, 'speak-learn');
 
   const kinds = new Set();
-  let answered = 0, sayCards = 0, scriptSeen = 0;
+  let answered = 0, sayCards = 0, buildCards = 0, scriptSeen = 0;
   for (let i = 0; i < 60; i++) {
     const q = await page.locator('.card .muted.small').first().textContent().catch(() => null);
     if (!q) break;
@@ -242,14 +258,16 @@ if (PROD) {
     const r = await answerCard(page);
     if (!r) break;
     if (r.kind === 'say') sayCards++;
+    if (r.kind === 'build') buildCards++;
     if (r.graded) answered++;
   }
-  console.log(`    ${answered} cards answered, ${sayCards} speaking cards`);
+  console.log(`    ${answered} cards answered, ${sayCards} speaking, ${buildCards} sentence-building`);
   console.log(`    exercise types: ${[...kinds].join(' | ')}`);
   await shot(page, 'speak-progress');
 
   await step('a speaking session runs without stalling', () => { if (answered < 25) throw new Error(`only ${answered}`); });
   await step('spoken-production cards appear', () => { if (sayCards === 0) throw new Error('no say-it cards'); });
+  await step('sentence-assembly cards appear', () => { if (buildCards === 0) throw new Error('no build-sentence cards'); });
   await step('NO Bangla script is ever shown', () => {
     if (scriptSeen > 0) throw new Error(`${scriptSeen} cards showed script`);
   });

@@ -280,6 +280,16 @@ describe('teaching curve', () => {
       expect(at(25).lexemes).toBeGreaterThan(15);
     });
 
+    it('plans sentence assembly, which is what trains word order', () => {
+      // Recall of a memorised phrase never exposes a word-order error, and
+      // a single-blank cloze hands the frame over for free. Assembling the
+      // sentence is the only exercise that makes SOV explicit.
+      const known = emptyKnowledge();
+      for (const l of bn.lexemes) known.lexemes.add(l.id);
+      const withSentences = candidates(graph, known, TRACKS.speaking, 1);
+      expect(withSentences.some((c) => c.exercises.includes('build-sentence'))).toBe(true);
+    });
+
     it('plans only script-free exercises', () => {
       const kinds = new Set<string>();
       for (const c of candidates(graph, emptyKnowledge(), TRACKS.speaking, 3)) {

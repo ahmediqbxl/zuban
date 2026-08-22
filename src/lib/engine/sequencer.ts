@@ -166,7 +166,10 @@ function exercisesFor(tier: TargetTier, track: TrackConfig): ExerciseKind[] {
     // studying the script gets the romanized variant instead. Offering the
     // script version regardless used to leave a speech-only learner with
     // no answerable sentence card at all.
+    // Difficulty ramp: recognise a missing word, then assemble the whole
+    // sentence, then produce it unaided.
     out.push(track.script ? 'cloze' : 'cloze-roman');
+    out.push('build-sentence');
     if (track.listening) out.push('sentence-listen');
     if (track.speech) out.push('say-sentence');
   }
