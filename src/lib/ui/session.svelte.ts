@@ -20,6 +20,7 @@ import {
 import { buildCoverageModel, coverage, scriptCoverage, readableSentences } from '$engine/coverage';
 import { computeStats, type DayRow, type Stats } from './stats';
 import * as local from '$db/local';
+import { pingActivity } from '$db/telemetry';
 import { clusters } from '$content/scripts/bengali';
 import { speech } from './speech.svelte';
 import { SOUND_GROUPS, TRICKY } from '$course/bn/sounds';
@@ -572,6 +573,9 @@ class SessionState {
       local.recordActivity(grade !== 'again', this.coverage)
     ]);
     this.days = await local.loadDays();
+    // Daily retention mark — fire-and-forget, self-throttled to one insert
+    // per device per day, and a no-op without Supabase.
+    void pingActivity(this.coverage, course.meta.code);
     this.advance();
   }
 
