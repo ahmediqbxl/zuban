@@ -12,8 +12,13 @@
  */
 
 import { browser } from '$app/environment';
-import { supabase, isConfigured, sync, saveSubscription } from './sync';
-import type { Session, User } from '@supabase/supabase-js';
+import { supabase, isConfigured, sync, saveSubscription, deleteSubscription } from './sync';
+import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
+
+// The endpoint we last persisted, so a browser-initiated subscription
+// rotation is noticed and re-saved on the next app open without
+// re-upserting on every load.
+const ENDPOINT_KEY = 'zuban:push-endpoint';
 
 export type AuthState = 'unconfigured' | 'signed-out' | 'sent' | 'signed-in' | 'error';
 
@@ -31,26 +36,32 @@ class Auth {
       return;
     }
     const { data } = await sb.auth.getSession();
-    this.apply(data.session);
-    sb.auth.onAuthStateChange((_evt, session) => this.apply(session));
+    this.apply('INITIAL_SESSION', data.session);
+    sb.auth.onAuthStateChange((evt, session) => this.apply(evt, session));
   }
 
-  private apply(session: Session | null) {
-    const wasSignedOut = this.user === null;
+  private apply(evt: AuthChangeEvent, session: Session | null) {
     this.user = session?.user ?? null;
     this.state = this.user ? 'signed-in' : 'signed-out';
+    if (!this.user) return;
     // A learner may have turned on reminders before signing in; the
-    // subscription existed only in the browser then. Now that rows are
-    // writable under RLS, persist it so the server can push to this device.
-    if (this.user && wasSignedOut) void this.persistPushSubscription();
+    // subscription existed only in the browser then. Persist it on a real
+    // sign-in, and on later loads only if the browser has rotated the
+    // endpoint underneath us — not on every page open.
+    if (evt === 'SIGNED_IN') void this.persistPushSubscription(true);
+    else if (evt === 'INITIAL_SESSION') void this.persistPushSubscription(false);
   }
 
-  private async persistPushSubscription() {
+  private async persistPushSubscription(force: boolean) {
     if (!browser || !('serviceWorker' in navigator)) return;
     try {
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager?.getSubscription();
-      if (sub) await saveSubscription(sub.toJSON());
+      if (!sub) return;
+      if (!force && localStorage.getItem(ENDPOINT_KEY) === sub.endpoint) return;
+      if (await saveSubscription(sub.toJSON())) {
+        localStorage.setItem(ENDPOINT_KEY, sub.endpoint);
+      }
     } catch {
       // Reminders are best-effort; never let them disturb sign-in.
     }
@@ -74,6 +85,19 @@ class Auth {
   }
 
   async signOut() {
+    // The push subscription row must go first, while RLS still lets this
+    // account delete its own rows. Without this, a shared device keeps
+    // receiving the previous account's due-review pushes forever.
+    if (browser && 'serviceWorker' in navigator) {
+      try {
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager?.getSubscription();
+        if (sub) await deleteSubscription(sub.endpoint);
+        localStorage.removeItem(ENDPOINT_KEY);
+      } catch {
+        // Best-effort; sign-out must not be blockable by push state.
+      }
+    }
     // Local progress is deliberately left in place. Signing out should not
     // wipe a learner's work — they may simply be handing over the phone.
     await supabase()?.auth.signOut();

@@ -108,6 +108,25 @@ sw.addEventListener('push', (event) => {
   );
 });
 
+// Browsers rotate push subscriptions on their own schedule. Re-subscribe
+// immediately with the same VAPID key so delivery never lapses; the app
+// persists the new endpoint on its next open (it compares against the
+// endpoint it last saved). Until then the server's copy is stale, which
+// costs at most the nudges in between — the send path prunes it on 410.
+sw.addEventListener('pushsubscriptionchange', (event) => {
+  const e = event as Event & {
+    oldSubscription?: PushSubscription | null;
+    waitUntil(p: Promise<unknown>): void;
+  };
+  const key = e.oldSubscription?.options?.applicationServerKey;
+  if (!key) return;
+  e.waitUntil(
+    sw.registration.pushManager
+      .subscribe({ userVisibleOnly: true, applicationServerKey: key })
+      .catch(() => undefined)
+  );
+});
+
 sw.addEventListener('notificationclick', (event) => {
   event.notification.close();
   // Focus an existing window rather than opening a duplicate.

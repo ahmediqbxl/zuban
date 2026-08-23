@@ -11,20 +11,23 @@ alter table public.push_subscriptions
 create extension if not exists pg_cron;
 create extension if not exists pg_net;
 
--- The bearer token is the anon key, which is public by definition (every
--- browser client ships it). Invoking the function early costs nothing:
--- the once-per-day guard above makes extra invocations no-ops.
-select cron.schedule(
-  'send-due-reminders',
-  '0 */6 * * *',
-  $$
-  select net.http_post(
-    url     := 'https://jjknnrfwvivhomorumhv.supabase.co/functions/v1/send-due-reminders',
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqa25ucmZ3dml2aG9tb3J1bWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0OTgyOTMsImV4cCI6MjEwMzA3NDI5M30.DPL9CgFqC5sI4s2gpk9h3VyY9qTha20PNqpEqnLzi4Q'
-    ),
-    body    := '{}'::jsonb
-  )
-  $$
-);
+-- Scheduling itself is deliberately NOT done here. Migrations replay in
+-- every environment, and a job body needs an environment-specific
+-- function URL — a dev or preview database replaying this file must not
+-- acquire a cron job that quietly POSTs to production every six hours.
+-- (Production's job was created when this migration first ran there;
+-- this file was later reduced to extensions-only.)
+--
+-- To enable reminders in an environment, run once by hand, with that
+-- environment's function URL and its anon key (the anon key is public —
+-- every browser client ships it — and early invocations are no-ops
+-- thanks to the once-per-day guard):
+--
+--   select cron.schedule('send-due-reminders', '0 */6 * * *', $job$
+--     select net.http_post(
+--       url     := 'https://<project-ref>.supabase.co/functions/v1/send-due-reminders',
+--       headers := jsonb_build_object(
+--         'Content-Type', 'application/json',
+--         'Authorization', 'Bearer <anon key>'),
+--       body    := '{}'::jsonb)
+--   $job$);

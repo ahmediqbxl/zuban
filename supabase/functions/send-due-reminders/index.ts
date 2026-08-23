@@ -56,17 +56,28 @@ Deno.serve(async () => {
   for (const sub of subs ?? []) {
     const due = dueByUser.get(sub.user_id) ?? 0;
     if (due < DUE_THRESHOLD) continue;
+
+    // Claim the row BEFORE sending. The update's where-clause repeats the
+    // eligibility test, so of two overlapping invocations (cron racing a
+    // manual call, or a slow run overlapping the next tick) exactly one
+    // gets the row back and sends; check-then-act would let both through.
+    // A send that then fails costs one nudge until tomorrow — the cheap
+    // side of that trade.
+    const { data: claimed } = await sb
+      .from('push_subscriptions')
+      .update({ last_notified_at: nowIso })
+      .eq('user_id', sub.user_id)
+      .eq('endpoint', sub.endpoint)
+      .or(`last_notified_at.is.null,last_notified_at.lt.${cutoff}`)
+      .select('endpoint');
+    if (!claimed?.length) continue;
+
     try {
       await webpush.sendNotification(
         { endpoint: sub.endpoint, keys: sub.keys },
         JSON.stringify({ due })
       );
       sent++;
-      await sb
-        .from('push_subscriptions')
-        .update({ last_notified_at: nowIso })
-        .eq('user_id', sub.user_id)
-        .eq('endpoint', sub.endpoint);
     } catch (err) {
       const status = (err as { statusCode?: number }).statusCode;
       if (status === 404 || status === 410) {
