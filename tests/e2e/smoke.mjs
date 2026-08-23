@@ -37,10 +37,14 @@ const SPEAKING = args.includes('--speaking');
  */
 const WRONG = args.includes('--wrong');
 const PORT = args.includes('--port') ? args[args.indexOf('--port') + 1] : PROD ? '5192' : '5190';
-const URL = `http://127.0.0.1:${PORT}`;
+// `localhost`, not 127.0.0.1: on macOS vite binds only the IPv6 loopback
+// (::1), so a hardcoded IPv4 address gets ERR_CONNECTION_REFUSED there.
+const URL = `http://localhost:${PORT}`;
 const SHOTS = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : null;
-// Chromium ships with the image; Playwright's own download is skipped.
-const EXE = process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+// CHROMIUM_PATH points at a system Chromium (the cloud image ships one at
+// /opt/pw-browsers). Unset, Playwright launches its own managed browser —
+// `npx playwright install chromium` once per machine.
+const EXE = process.env.CHROMIUM_PATH;
 
 let failures = 0;
 const step = async (label, fn) => {
@@ -120,7 +124,7 @@ async function answerCard(page) {
   return { kind: isSay ? 'say' : isBuild ? 'build' : isSpell ? 'spell' : 'choice', graded };
 }
 
-const browser = await chromium.launch({ executablePath: EXE });
+const browser = await chromium.launch(EXE ? { executablePath: EXE } : {});
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
 const page = await ctx.newPage();
 
