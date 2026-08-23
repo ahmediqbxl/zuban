@@ -18,6 +18,11 @@ import { supabase } from './sync';
 const DEVICE_KEY = 'zuban:device';
 const PINGED_KEY = 'zuban:pinged';
 
+// Answers arrive faster than the insert round-trips, and the localStorage
+// guard is only stamped afterwards — without this flag two quick answers
+// double-insert and the second one 409s in the console.
+let inflight = false;
+
 /** UTC day stamp. The server ledger uses UTC so cohorts don't straddle
  *  timezones; the local stats ledger keeps using the device's local day. */
 export function todayUTC(now: Date = new Date()): string {
@@ -32,9 +37,15 @@ export function coveragePct(coverage: number): number {
 
 export async function pingActivity(coverage: number, course: string): Promise<void> {
   if (!browser) return;
+  // Dev servers and the e2e suite carry the same env keys as production;
+  // without this gate every local test run appends fake devices to the
+  // real retention ledger.
+  if (import.meta.env.DEV) return;
   const sb = supabase();
   if (!sb) return;
 
+  if (inflight) return;
+  inflight = true;
   try {
     const day = todayUTC();
     if (localStorage.getItem(PINGED_KEY) === day) return;
@@ -54,5 +65,7 @@ export async function pingActivity(coverage: number, course: string): Promise<vo
     if (!error || error.code === '23505') localStorage.setItem(PINGED_KEY, day);
   } catch {
     // Telemetry must never disturb a lesson. Tomorrow is another ping.
+  } finally {
+    inflight = false;
   }
 }
