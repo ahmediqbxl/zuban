@@ -13,6 +13,7 @@
 
 import { browser } from '$app/environment';
 import { base } from '$app/paths';
+import { saveSubscription } from '$db/sync';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -107,12 +108,17 @@ class Install {
 
     try {
       const reg = await navigator.serviceWorker.ready;
-      await reg.pushManager.subscribe({
+      const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidKey)
       });
       this.subscribed = true;
-      this.message = 'Reminders on.';
+      // Signed out this is a no-op; auth persists the subscription on the
+      // next sign-in instead.
+      const stored = await saveSubscription(sub.toJSON());
+      this.message = stored
+        ? 'Reminders on — this device will be nudged when reviews pile up.'
+        : 'Reminders on for this device.';
     } catch (err) {
       this.message = err instanceof Error ? err.message : 'Could not enable reminders.';
     }

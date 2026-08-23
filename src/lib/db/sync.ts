@@ -40,6 +40,48 @@ async function userId(): Promise<string | null> {
 }
 
 /**
+ * Shape a browser PushSubscription into a push_subscriptions row.
+ *
+ * Exported for tests; returns null when the subscription is missing the
+ * pieces the Web Push protocol needs (an endpoint and both encryption
+ * keys), because a partial row can never be delivered to.
+ */
+export function toSubscriptionRow(
+  userId: string,
+  sub: PushSubscriptionJSON
+): { user_id: string; endpoint: string; keys: { p256dh: string; auth: string } } | null {
+  const { endpoint, keys } = sub;
+  if (!endpoint || !keys?.p256dh || !keys?.auth) return null;
+  return { user_id: userId, endpoint, keys: { p256dh: keys.p256dh, auth: keys.auth } };
+}
+
+/**
+ * Store this device's push subscription so the server can send to it.
+ *
+ * No-op unless configured and signed in — anonymous learners keep local
+ * reminders only. Safe to call repeatedly: keyed on (user, endpoint).
+ */
+export async function saveSubscription(sub: PushSubscriptionJSON): Promise<boolean> {
+  const sb = supabase();
+  const uid = await userId();
+  if (!sb || !uid) return false;
+  const row = toSubscriptionRow(uid, sub);
+  if (!row) return false;
+  const { error } = await sb
+    .from('push_subscriptions')
+    .upsert(row, { onConflict: 'user_id,endpoint' });
+  return !error;
+}
+
+/** Forget a device, e.g. after the browser revokes the subscription. */
+export async function deleteSubscription(endpoint: string): Promise<void> {
+  const sb = supabase();
+  const uid = await userId();
+  if (!sb || !uid) return;
+  await sb.from('push_subscriptions').delete().eq('user_id', uid).eq('endpoint', endpoint);
+}
+
+/**
  * Push local state up, then merge remote state down.
  *
  * Safe to call repeatedly and safe to interrupt — every write is an upsert

@@ -11,7 +11,8 @@
  * nobody wants from a language app.
  */
 
-import { supabase, isConfigured, sync } from './sync';
+import { browser } from '$app/environment';
+import { supabase, isConfigured, sync, saveSubscription } from './sync';
 import type { Session, User } from '@supabase/supabase-js';
 
 export type AuthState = 'unconfigured' | 'signed-out' | 'sent' | 'signed-in' | 'error';
@@ -35,8 +36,24 @@ class Auth {
   }
 
   private apply(session: Session | null) {
+    const wasSignedOut = this.user === null;
     this.user = session?.user ?? null;
     this.state = this.user ? 'signed-in' : 'signed-out';
+    // A learner may have turned on reminders before signing in; the
+    // subscription existed only in the browser then. Now that rows are
+    // writable under RLS, persist it so the server can push to this device.
+    if (this.user && wasSignedOut) void this.persistPushSubscription();
+  }
+
+  private async persistPushSubscription() {
+    if (!browser || !('serviceWorker' in navigator)) return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager?.getSubscription();
+      if (sub) await saveSubscription(sub.toJSON());
+    } catch {
+      // Reminders are best-effort; never let them disturb sign-in.
+    }
   }
 
   async signIn(email: string) {
