@@ -40,8 +40,13 @@ create table if not exists public.review_items (
   primary key (user_id, course, item_key)
 );
 
+-- Indexed as text, not timestamptz: the cast isn't IMMUTABLE (it depends on
+-- the session timezone) so Postgres rejects it in an index expression. The
+-- client writes `due` as JSON.stringify's ISO-8601 UTC form, and those
+-- fixed-format strings sort lexicographically in chronological order, so a
+-- text index gives the same ordering.
 create index if not exists review_items_due_idx
-  on public.review_items (user_id, course, ((card->>'due')::timestamptz));
+  on public.review_items (user_id, course, (card->>'due'));
 
 -- ---------------------------------------------------------------------------
 -- Known items: what the sequencer treats as acquired.

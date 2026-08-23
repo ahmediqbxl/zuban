@@ -14,3 +14,4 @@ static/audio/generated/
 # approved what.
 content/*/review.csv
 content/*/review-*.csv
+supabase/.temp/
