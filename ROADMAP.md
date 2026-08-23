@@ -74,7 +74,8 @@ Audio on everything, and enough content that i+1 actually binds. **4–8 weeks.*
       for the tail
 - [ ] Grow 37 → ~400 sentences. At 37 the graph is too sparse for the +1
       constraint to bind; the sequencer widens its budget to avoid stalling
-- [x] Placement test written and tested — needs a route
+- [x] Placement test written, tested, routed at `/placement`, linked from
+      onboarding and the You page
 - [ ] Vendor and subset the font, then verify `/script` on real hardware
 
 **Exit:** zero to ~20% coverage without hitting a wall or a silent letter.
@@ -84,8 +85,11 @@ Audio on everything, and enough content that i+1 actually binds. **4–8 weeks.*
 Accounts, sync, first retention loop. **3–5 weeks.**
 
 - [x] Supabase migration + `sync.ts` with RLS — needs auth UI and wiring
-- [ ] Web Push on due reviews (not streaks — "six cards are slipping" is the
-      honest signal)
+- [x] Web Push on due reviews (not streaks — "six cards are slipping" is the
+      honest signal). Subscriptions stored per device, sender runs on
+      pg_cron every 6h, ≥5 due, ≤1 nudge/day. Delivery to a real phone
+      still unverified — needs a signed-in subscriber, which needs the
+      auth Site URL configured
 - [ ] Install prompt. Load-bearing: iOS push only works for installed PWAs, so
       push adoption is capped by install rate
 - [ ] Instrument D1/D7/D30 and coverage velocity — without this the Phase 3
