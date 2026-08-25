@@ -21,6 +21,7 @@
   const isCorrect = $derived(picked !== null && task !== null && picked === task.answer);
   const glyph = $derived(task?.tier === 'glyph' ? glyphById.get(task.id) : undefined);
   const notes = $derived(task?.tier === 'sentence' ? (session.notesFor(task.id) ?? []) : []);
+  const paradigm = $derived(task?.tier === 'lexeme' ? session.paradigmFor(task.id) : null);
   const isSpeaking = $derived(task?.kind === 'say-word' || task?.kind === 'say-sentence');
   /** Script learners see Bangla as the headline; speaking learners don't. */
   const showScript = $derived(session.track.script);
@@ -101,7 +102,8 @@
       {:else if task.kind === 'glyph-sound'}How is this letter pronounced?
       {:else if task.kind === 'word-read' || task.kind === 'word-recall'}What does this mean?
       {:else if task.kind === 'word-spell'}Spell this word in Bangla
-      {:else if task.kind === 'build-sentence'}Put the words in the right order
+    {:else if task.kind === 'build-sentence'}Put the words in the right order
+      {:else if task.kind === 'conjugate'}Which form of the verb?
       {:else if task.kind === 'cloze' || task.kind === 'cloze-roman'}Which word completes it?
       {:else if task.kind === 'word-listen'}Which word did you hear?
       {:else if task.kind === 'sentence-listen'}What did you hear?
@@ -134,6 +136,9 @@
           {/if}
         </div>
       {/if}
+
+    {:else if task.kind === 'conjugate'}
+      <p style="margin: 0; font-size: 1.35rem; line-height: 1.35;">{task.prompt}</p>
 
     {:else if task.kind === 'build-sentence'}
       <p style="margin: 0 0 0.9rem; font-size: 1.3rem; line-height: 1.35;">{task.prompt}</p>
@@ -252,6 +257,37 @@
           disabled={picked !== null}
         >{option}</button>
       {/each}
+    </div>
+  {/if}
+
+  {#if revealed && paradigm}
+    <!-- The payoff: one verb agreeing with different people, rather than
+         several words that happen to look alike. -->
+    <div class="card" style="margin-top: 1.1rem;">
+      <div class="spread" style="margin-bottom: 0.7rem;">
+        <span class="muted small">
+          <span class={showScript ? 'bn-inline' : ''}>{showScript ? paradigm.lemma.form : paradigm.lemma.roman}</span>
+          — {paradigm.lemma.gloss}
+        </span>
+        <span class="tag">{paradigm.rows.length} forms</span>
+      </div>
+      {#each paradigm.rows as row}
+        <div
+          class="spread"
+          style="padding: 0.3rem 0; border-bottom: 1px solid var(--border);
+                 {row.isCurrent ? 'font-weight: 600;' : ''}"
+        >
+          <span class={showScript ? 'bn' : ''} style="color: {row.isCurrent ? 'var(--accent)' : 'inherit'};">
+            {showScript ? row.bangla : row.roman}
+          </span>
+          <span class="faint small" style="text-align: right;">
+            {row.label}{#if row.irregular} · irregular{/if}{#if row.negative} · negative{/if}
+          </span>
+        </div>
+      {/each}
+      {#if paradigm.lemma.note}
+        <p class="muted small" style="margin: 0.7rem 0 0;">{paradigm.lemma.note}</p>
+      {/if}
     </div>
   {/if}
 

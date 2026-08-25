@@ -1793,7 +1793,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-achh"
     },
     {
       "id": "bn-lex-achho-190",
@@ -1812,7 +1813,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-achh"
     },
     {
       "id": "bn-lex-achhen-175",
@@ -1834,7 +1836,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-achh"
     },
     {
       "id": "bn-lex-achhe-20",
@@ -1855,7 +1858,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-achh"
     },
     {
       "id": "bn-lex-kori-110",
@@ -1875,7 +1879,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kora"
     },
     {
       "id": "bn-lex-kore-30",
@@ -1896,7 +1901,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kora"
     },
     {
       "id": "bn-lex-jai-230",
@@ -1916,7 +1922,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-jaoya"
     },
     {
       "id": "bn-lex-jay-140",
@@ -1936,7 +1943,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-jaoya"
     },
     {
       "id": "bn-lex-jao-320",
@@ -1956,7 +1964,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-jaoya"
     },
     {
       "id": "bn-lex-khai-340",
@@ -1976,7 +1985,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-khaoya"
     },
     {
       "id": "bn-lex-khay-290",
@@ -1996,7 +2006,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-khaoya"
     },
     {
       "id": "bn-lex-boli-280",
@@ -2016,7 +2027,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bola"
     },
     {
       "id": "bn-lex-bole-45",
@@ -2036,7 +2048,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bola"
     },
     {
       "id": "bn-lex-shikhchhi-900",
@@ -2057,7 +2070,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-shekha"
     },
     {
       "id": "bn-lex-thaki-400",
@@ -2079,7 +2093,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-thaka"
     },
     {
       "id": "bn-lex-chai-250",
@@ -2099,7 +2114,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-chaoya"
     },
     {
       "id": "bn-lex-pari-270",
@@ -2120,7 +2136,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-para"
     },
     {
       "id": "bn-lex-jani-220",
@@ -2141,7 +2158,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-jana"
     },
     {
       "id": "bn-lex-dekhi-310",
@@ -2162,7 +2180,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-dekha"
     },
     {
       "id": "bn-lex-ki-18",
@@ -3106,7 +3125,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-asha"
     },
     {
       "id": "bn-lex-korben-480",
@@ -3128,7 +3148,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kora"
     },
     {
       "id": "bn-lex-kichhu-78",
@@ -3192,7 +3213,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-khaoya"
     },
     {
       "id": "bn-lex-gan-285",
@@ -3273,7 +3295,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-pora"
     },
     {
       "id": "bn-lex-bolte-295",
@@ -3294,7 +3317,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bola"
     },
     {
       "id": "bn-lex-bollo-305",
@@ -3313,7 +3337,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bola"
     },
     {
       "id": "bn-lex-bishshobiddaloy-720",
@@ -3358,7 +3383,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-jaoya"
     },
     {
       "id": "bn-lex-je-42",
@@ -3421,7 +3447,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-shekha"
     },
     {
       "id": "bn-lex-shundor-225",
@@ -3483,7 +3510,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-hoya"
     },
     {
       "id": "bn-lex-ek-62",
@@ -4580,7 +4608,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-asha"
     },
     {
       "id": "bn-lex-ashe-132",
@@ -4600,7 +4629,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-asha"
     },
     {
       "id": "bn-lex-dei-336",
@@ -4620,7 +4650,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-deoya"
     },
     {
       "id": "bn-lex-dey-216",
@@ -4640,7 +4671,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-deoya"
     },
     {
       "id": "bn-lex-nii-346",
@@ -4660,7 +4692,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-neoya"
     },
     {
       "id": "bn-lex-ney-268",
@@ -4680,7 +4713,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-neoya"
     },
     {
       "id": "bn-lex-shuni-308",
@@ -4702,7 +4736,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-shona"
     },
     {
       "id": "bn-lex-shone-324",
@@ -4723,7 +4758,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-shona"
     },
     {
       "id": "bn-lex-likhi-358",
@@ -4743,7 +4779,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-lekha"
     },
     {
       "id": "bn-lex-lekhe-376",
@@ -4763,7 +4800,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-lekha"
     },
     {
       "id": "bn-lex-boshi-386",
@@ -4783,7 +4821,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bosha"
     },
     {
       "id": "bn-lex-boshe-234",
@@ -4803,7 +4842,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bosha"
     },
     {
       "id": "bn-lex-ghumai-424",
@@ -4825,7 +4865,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-ghumano"
     },
     {
       "id": "bn-lex-ghumay-436",
@@ -4847,7 +4888,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-ghumano"
     },
     {
       "id": "bn-lex-thake-146",
@@ -4869,7 +4911,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-thaka"
     },
     {
       "id": "bn-lex-hoy-38",
@@ -4889,7 +4932,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-hoya"
     },
     {
       "id": "bn-lex-dekhe-126",
@@ -4910,7 +4954,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-dekha"
     },
     {
       "id": "bn-lex-kheli-428",
@@ -4931,7 +4976,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-khela"
     },
     {
       "id": "bn-lex-khele-418",
@@ -4951,7 +4997,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-khela"
     },
     {
       "id": "bn-lex-kini-444",
@@ -4971,7 +5018,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kena"
     },
     {
       "id": "bn-lex-kene-452",
@@ -4991,7 +5039,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kena"
     },
     {
       "id": "bn-lex-lal-312",
@@ -5745,7 +5794,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-asha"
     },
     {
       "id": "bn-lex-uchcharon-640",
@@ -5789,7 +5839,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-ana"
     },
     {
       "id": "bn-lex-korte-74",
@@ -5810,7 +5861,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kora"
     },
     {
       "id": "bn-lex-koren-164",
@@ -5831,7 +5883,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kora"
     },
     {
       "id": "bn-lex-kachhe-86",
@@ -5873,7 +5926,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-chaoya"
     },
     {
       "id": "bn-lex-chithi-408",
@@ -5937,7 +5991,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-thaka"
     },
     {
       "id": "bn-lex-dorkar-202",
@@ -5979,7 +6034,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-achh"
     },
     {
       "id": "bn-lex-parini-486",
@@ -6001,7 +6057,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-para"
     },
     {
       "id": "bn-lex-paro-306",
@@ -6022,7 +6079,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-para"
     },
     {
       "id": "bn-lex-protidin-282",
@@ -6085,7 +6143,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bola"
     },
     {
       "id": "bn-lex-banay-422",
@@ -6107,7 +6166,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-banano"
     },
     {
       "id": "bn-lex-bujhte-314",
@@ -6129,7 +6189,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bojha"
     },
     {
       "id": "bn-lex-byabohar-276",
@@ -6176,7 +6237,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bhalobasha"
     },
     {
       "id": "bn-lex-jabo-224",
@@ -6196,7 +6258,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-jaoya"
     },
     {
       "id": "bn-lex-lage-124",
@@ -6219,7 +6282,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-laga"
     },
     {
       "id": "bn-lex-shikkharthi-460",
@@ -6412,7 +6476,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-hoya"
     },
     {
       "id": "bn-lex-hate-440",
@@ -6434,7 +6499,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-hata"
     },
     {
       "id": "bn-lex-opekkha-470",
@@ -6500,7 +6566,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-asha"
     },
     {
       "id": "bn-lex-assalam-905",
@@ -6611,7 +6678,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-asha"
     },
     {
       "id": "bn-lex-eshechhen-490",
@@ -6633,7 +6701,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-asha"
     },
     {
       "id": "bn-lex-oyalaikum-908",
@@ -6699,7 +6768,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kora"
     },
     {
       "id": "bn-lex-korun-290",
@@ -6720,7 +6790,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-kora"
     },
     {
       "id": "bn-lex-canada-1200",
@@ -6825,7 +6896,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-jaoya"
     },
     {
       "id": "bn-lex-chesta-345",
@@ -6868,7 +6940,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-jana"
     },
     {
       "id": "bn-lex-jhal-520",
@@ -6954,7 +7027,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-thaka"
     },
     {
       "id": "bn-lex-dam-310",
@@ -7061,7 +7135,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-neoya"
     },
     {
       "id": "bn-lex-peyechhe-270",
@@ -7083,7 +7158,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-paoya"
     },
     {
       "id": "bn-lex-bolun-300",
@@ -7104,7 +7180,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bola"
     },
     {
       "id": "bn-lex-bangladesh-240",
@@ -7149,7 +7226,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-bojha"
     },
     {
       "id": "bn-lex-moja-365",
@@ -7233,7 +7311,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-laga"
     },
     {
       "id": "bn-lex-shubho-405",
@@ -7297,7 +7376,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-hoya"
     },
     {
       "id": "bn-lex-hariye-580",
@@ -7320,7 +7400,8 @@
       "provenance": {
         "status": "draft",
         "source": "llm:claude"
-      }
+      },
+      "lemma": "bn-verb-harano"
     }
   ],
   "sentences": [
@@ -12556,6 +12637,816 @@
       "examples": [
         "bn-sent-016"
       ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    }
+  ],
+  "lemmas": [
+    {
+      "id": "bn-verb-kora",
+      "form": "করা",
+      "roman": "kora",
+      "gloss": "to do",
+      "stem": "kor",
+      "forms": [
+        {
+          "lexeme": "bn-lex-kori-110",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-kore-30",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-koren-164",
+          "person": "2pol",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-korchhi-260",
+          "person": "1",
+          "tense": "present-cont"
+        },
+        {
+          "lexeme": "bn-lex-korte-74",
+          "tense": "infinitive"
+        },
+        {
+          "lexeme": "bn-lex-korben-480",
+          "person": "2pol",
+          "tense": "future"
+        },
+        {
+          "lexeme": "bn-lex-korun-290",
+          "person": "2pol",
+          "tense": "imperative"
+        }
+      ],
+      "note": "The workhorse verb. Pairs with a noun to make hundreds of expressions — কাজ করা (to work), চেষ্টা করা (to try).",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-asha",
+      "form": "আসা",
+      "roman": "asha",
+      "gloss": "to come",
+      "stem": "ash",
+      "forms": [
+        {
+          "lexeme": "bn-lex-ashi-226",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-asho-334",
+          "person": "2fam",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-ashe-132",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-ashbo-330",
+          "person": "1",
+          "tense": "future"
+        },
+        {
+          "lexeme": "bn-lex-ashbe-410",
+          "person": "3",
+          "tense": "future"
+        },
+        {
+          "lexeme": "bn-lex-eshechhi-425",
+          "person": "1",
+          "tense": "present-perfect",
+          "irregular": true
+        },
+        {
+          "lexeme": "bn-lex-eshechhen-490",
+          "person": "2pol",
+          "tense": "present-perfect",
+          "irregular": true
+        }
+      ],
+      "note": "The perfect switches the vowel: আসা but এসেছি, not *আসেছি.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-jaoya",
+      "form": "যাওয়া",
+      "roman": "jaoya",
+      "gloss": "to go",
+      "stem": "ja",
+      "forms": [
+        {
+          "lexeme": "bn-lex-jai-230",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-jao-320",
+          "person": "2fam",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-jay-140",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-jabo-224",
+          "person": "1",
+          "tense": "future"
+        },
+        {
+          "lexeme": "bn-lex-jachchhi-560",
+          "person": "1",
+          "tense": "present-cont"
+        },
+        {
+          "lexeme": "bn-lex-gechhi-385",
+          "person": "1",
+          "tense": "present-perfect",
+          "irregular": true
+        }
+      ],
+      "note": "The perfect uses a completely different stem — গেছি, not *যাছি. Same idea as English go/went.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-bola",
+      "form": "বলা",
+      "roman": "bola",
+      "gloss": "to say",
+      "stem": "bol",
+      "forms": [
+        {
+          "lexeme": "bn-lex-boli-280",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-bole-45",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-bolte-295",
+          "tense": "infinitive"
+        },
+        {
+          "lexeme": "bn-lex-bollo-305",
+          "person": "3",
+          "tense": "past"
+        },
+        {
+          "lexeme": "bn-lex-bolun-300",
+          "person": "2pol",
+          "tense": "imperative"
+        },
+        {
+          "lexeme": "bn-lex-bolar-300",
+          "tense": "verbal-noun"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-thaka",
+      "form": "থাকা",
+      "roman": "thaka",
+      "gloss": "to stay, to live",
+      "stem": "thak",
+      "forms": [
+        {
+          "lexeme": "bn-lex-thaki-400",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-thako-372",
+          "person": "2fam",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-thake-146",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-thakben-430",
+          "person": "2pol",
+          "tense": "future"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-achh",
+      "form": "আছ-",
+      "roman": "achh",
+      "gloss": "to be, to exist",
+      "stem": "achh",
+      "forms": [
+        {
+          "lexeme": "bn-lex-achhi-55",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-achho-190",
+          "person": "2fam",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-achhe-20",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-achhen-175",
+          "person": "2pol",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-nei-54",
+          "person": "3",
+          "tense": "present",
+          "negative": true
+        }
+      ],
+      "note": "Defective — it only exists in the present. Its negative is suppletive: নেই, never *আছে না. For location and possession, not for identity: এটা আমার বই needs no verb at all.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-khaoya",
+      "form": "খাওয়া",
+      "roman": "khaoya",
+      "gloss": "to eat, to drink",
+      "stem": "kha",
+      "forms": [
+        {
+          "lexeme": "bn-lex-khai-340",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-khay-290",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-khabe-520",
+          "person": "2fam",
+          "tense": "future"
+        }
+      ],
+      "note": "Covers drinking too — চা খাই is \"I drink tea\", not \"I eat tea\".",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-dekha",
+      "form": "দেখা",
+      "roman": "dekha",
+      "gloss": "to see, to watch",
+      "stem": "dekh",
+      "forms": [
+        {
+          "lexeme": "bn-lex-dekhi-310",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-dekhe-126",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-shona",
+      "form": "শোনা",
+      "roman": "shona",
+      "gloss": "to hear, to listen",
+      "stem": "shun",
+      "forms": [
+        {
+          "lexeme": "bn-lex-shuni-308",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-shone-324",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "note": "Vowel alternation: শুনি with u, শোনে with o. Regular for this verb class.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-lekha",
+      "form": "লেখা",
+      "roman": "lekha",
+      "gloss": "to write",
+      "stem": "likh",
+      "forms": [
+        {
+          "lexeme": "bn-lex-likhi-358",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-lekhe-376",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "note": "Same u/o-style alternation as শোনা: লিখি but লেখে.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-kena",
+      "form": "কেনা",
+      "roman": "kena",
+      "gloss": "to buy",
+      "stem": "kin",
+      "forms": [
+        {
+          "lexeme": "bn-lex-kini-444",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-kene-452",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "note": "Alternates like লেখা: কিনি but কেনে.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-bosha",
+      "form": "বসা",
+      "roman": "bosha",
+      "gloss": "to sit",
+      "stem": "bosh",
+      "forms": [
+        {
+          "lexeme": "bn-lex-boshi-386",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-boshe-234",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-ghumano",
+      "form": "ঘুমানো",
+      "roman": "ghumano",
+      "gloss": "to sleep",
+      "stem": "ghuma",
+      "forms": [
+        {
+          "lexeme": "bn-lex-ghumai-424",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-ghumay-436",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-khela",
+      "form": "খেলা",
+      "roman": "khela",
+      "gloss": "to play",
+      "stem": "khel",
+      "forms": [
+        {
+          "lexeme": "bn-lex-kheli-428",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-khele-418",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-deoya",
+      "form": "দেওয়া",
+      "roman": "deoya",
+      "gloss": "to give",
+      "stem": "de",
+      "forms": [
+        {
+          "lexeme": "bn-lex-dei-336",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-dey-216",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-neoya",
+      "form": "নেওয়া",
+      "roman": "neoya",
+      "gloss": "to take",
+      "stem": "ne",
+      "forms": [
+        {
+          "lexeme": "bn-lex-nii-346",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-ney-268",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-nebo-400",
+          "person": "1",
+          "tense": "future"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-para",
+      "form": "পারা",
+      "roman": "para",
+      "gloss": "to be able to",
+      "stem": "par",
+      "forms": [
+        {
+          "lexeme": "bn-lex-pari-270",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-paro-306",
+          "person": "2fam",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-parini-486",
+          "person": "1",
+          "tense": "present-perfect"
+        }
+      ],
+      "note": "Follows another verb in its infinitive: বলতে পারি — \"I can speak\". পারিনি is the negative perfect, \"I could not\".",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-jana",
+      "form": "জানা",
+      "roman": "jana",
+      "gloss": "to know",
+      "stem": "jan",
+      "forms": [
+        {
+          "lexeme": "bn-lex-jani-220",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-janen-280",
+          "person": "2pol",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-shekha",
+      "form": "শেখা",
+      "roman": "shekha",
+      "gloss": "to learn",
+      "stem": "shikh",
+      "forms": [
+        {
+          "lexeme": "bn-lex-shikhchhi-900",
+          "person": "1",
+          "tense": "present-cont"
+        },
+        {
+          "lexeme": "bn-lex-shikhte-640",
+          "tense": "infinitive"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-pora",
+      "form": "পড়া",
+      "roman": "pora",
+      "gloss": "to read, to study",
+      "stem": "por",
+      "forms": [
+        {
+          "lexeme": "bn-lex-pori-315",
+          "person": "1",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-chaoya",
+      "form": "চাওয়া",
+      "roman": "chaoya",
+      "gloss": "to want",
+      "stem": "cha",
+      "forms": [
+        {
+          "lexeme": "bn-lex-chai-250",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-chao-342",
+          "person": "2fam",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-hoya",
+      "form": "হওয়া",
+      "roman": "hoya",
+      "gloss": "to be, to become, to happen",
+      "stem": "ho",
+      "forms": [
+        {
+          "lexeme": "bn-lex-hoy-38",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-hobo-190",
+          "person": "1",
+          "tense": "future"
+        },
+        {
+          "lexeme": "bn-lex-hobe-58",
+          "person": "3",
+          "tense": "future"
+        },
+        {
+          "lexeme": "bn-lex-hoyechhe-150",
+          "person": "3",
+          "tense": "present-perfect"
+        }
+      ],
+      "note": "হবে also carries obligation: যেতে হবে is \"must go\".",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-bojha",
+      "form": "বোঝা",
+      "roman": "bojha",
+      "gloss": "to understand",
+      "stem": "bujh",
+      "forms": [
+        {
+          "lexeme": "bn-lex-bujhi-350",
+          "person": "1",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-bujhte-314",
+          "tense": "infinitive"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-paoya",
+      "form": "পাওয়া",
+      "roman": "paoya",
+      "gloss": "to get, to receive",
+      "stem": "pa",
+      "forms": [
+        {
+          "lexeme": "bn-lex-peyechhe-270",
+          "person": "3",
+          "tense": "present-perfect",
+          "irregular": true
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-laga",
+      "form": "লাগা",
+      "roman": "laga",
+      "gloss": "to feel, to seem, to take (time)",
+      "stem": "lag",
+      "forms": [
+        {
+          "lexeme": "bn-lex-lage-124",
+          "person": "3",
+          "tense": "present"
+        },
+        {
+          "lexeme": "bn-lex-laglo-335",
+          "person": "3",
+          "tense": "past"
+        }
+      ],
+      "note": "Used impersonally for liking: আমার ভালো লাগে is literally \"to me it feels good\".",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-hata",
+      "form": "হাঁটা",
+      "roman": "hata",
+      "gloss": "to walk",
+      "stem": "hat",
+      "forms": [
+        {
+          "lexeme": "bn-lex-hate-440",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-banano",
+      "form": "বানানো",
+      "roman": "banano",
+      "gloss": "to make, to prepare",
+      "stem": "bana",
+      "forms": [
+        {
+          "lexeme": "bn-lex-banay-422",
+          "person": "3",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-bhalobasha",
+      "form": "ভালোবাসা",
+      "roman": "bhalobasha",
+      "gloss": "to love",
+      "stem": "bhalobash",
+      "forms": [
+        {
+          "lexeme": "bn-lex-bhalobashi-366",
+          "person": "1",
+          "tense": "present"
+        }
+      ],
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-ana",
+      "form": "আনা",
+      "roman": "ana",
+      "gloss": "to bring",
+      "stem": "an",
+      "forms": [
+        {
+          "lexeme": "bn-lex-enechhi-470",
+          "person": "1",
+          "tense": "present-perfect",
+          "irregular": true
+        }
+      ],
+      "note": "Perfect shifts the vowel like আসা: এনেছি, not *আনেছি.",
+      "provenance": {
+        "status": "draft",
+        "source": "llm:claude"
+      }
+    },
+    {
+      "id": "bn-verb-harano",
+      "form": "হারানো",
+      "roman": "harano",
+      "gloss": "to lose",
+      "stem": "hara",
+      "forms": [
+        {
+          "lexeme": "bn-lex-hariye-580",
+          "tense": "perfective-participle"
+        }
+      ],
+      "note": "হারিয়ে গেছি — \"having lost, I have gone\" — is the ordinary way to say \"I am lost\".",
       "provenance": {
         "status": "draft",
         "source": "llm:claude"

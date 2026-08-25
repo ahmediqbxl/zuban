@@ -89,6 +89,42 @@ export const glyphById = new Map(course.glyphs.map((g) => [g.id, g]));
 export const lexemeById = new Map(course.lexemes.map((l) => [l.id, l]));
 export const sentenceById = new Map(course.sentences.map((s) => [s.id, s]));
 export const noteById = new Map(course.notes.map((n) => [n.id, n]));
+export const lemmaById = new Map((course.lemmas ?? []).map((l) => [l.id, l]));
+
+/** How each person is described to a learner. */
+const PERSON_LABEL: Record<string, string> = {
+  '1': 'I',
+  '2int': 'you (intimate — তুই)',
+  '2fam': 'you (familiar — তুমি)',
+  '2pol': 'you (polite — আপনি)',
+  '3': 'he / she',
+  '3pol': 'he / she (polite)'
+};
+
+/** For non-finite forms, the tense IS the description. */
+function tenseOnlyLabel(tense: string): string {
+  return (
+    {
+      infinitive: 'to —',
+      'verbal-noun': 'the act of —',
+      'perfective-participle': 'having —ed',
+      imperative: 'asking someone to'
+    }[tense] ?? tense
+  );
+}
+
+/** How each tense is described, appended to the person. */
+const TENSE_LABEL: Record<string, string> = {
+  present: '',
+  'present-cont': ', right now',
+  'present-perfect': ', already done',
+  past: ', in the past',
+  future: ', in the future',
+  imperative: ' — asking them to',
+  infinitive: '',
+  'verbal-noun': '',
+  'perfective-participle': ''
+};
 
 /** One thing to show the learner. */
 export interface Task {
@@ -195,6 +231,36 @@ class SessionState {
    * plateau, but a wall of text before every sentence is why people skip
    * it — so these are collapsed until asked for.
    */
+  /**
+   * The verb family a word belongs to, laid out for display.
+   *
+   * Shown once a card is answered so the learner sees করি / করে / করেন as
+   * one verb agreeing with different people, rather than as three words
+   * that happen to rhyme. Returns null for anything that is not an
+   * inflected verb form.
+   */
+  paradigmFor(lexemeId: string) {
+    const lex = lexemeById.get(lexemeId);
+    const lemma = lex?.lemma ? lemmaById.get(lex.lemma) : undefined;
+    if (!lemma) return null;
+    const rows = lemma.forms
+      .map((f) => {
+        const l = lexemeById.get(f.lexeme);
+        if (!l) return null;
+        return {
+          roman: l.roman,
+          bangla: l.form,
+          label: f.person ? (PERSON_LABEL[f.person] ?? f.person) : tenseOnlyLabel(f.tense),
+          tense: f.tense,
+          irregular: Boolean(f.irregular),
+          negative: Boolean(f.negative),
+          isCurrent: f.lexeme === lexemeId
+        };
+      })
+      .filter((r): r is NonNullable<typeof r> => Boolean(r));
+    return { lemma, rows };
+  }
+
   notesFor(sentenceId: string) {
     const s = sentenceById.get(sentenceId);
     if (!s?.notes) return [];
@@ -351,6 +417,40 @@ class SessionState {
       const l = lexemeById.get(id);
       if (!l) return null;
       if (AUDIO_REQUIRED.has(kind) && !hasVoice(l.audio)) return null;
+
+      if (kind === 'conjugate') {
+        const lemma = l.lemma ? lemmaById.get(l.lemma) : undefined;
+        if (!lemma) return null;
+        const self = lemma.forms.find((f) => f.lexeme === l.id);
+        // Non-finite forms agree with nobody, so there is nothing to drill.
+        if (!self?.person) return null;
+
+        // Distractors are this verb's other forms — the whole point is
+        // telling them apart, not telling this verb from another.
+        const siblings = lemma.forms
+          .filter((f) => f.lexeme !== l.id)
+          .map((f) => lexemeById.get(f.lexeme)?.roman)
+          .filter((r): r is string => Boolean(r));
+        const distinct = [...new Set(siblings)].filter((r) => r !== l.roman);
+        if (distinct.length < 2) return null; // too small a paradigm to choose from
+
+        const label = PERSON_LABEL[self.person] ?? self.person;
+        const when = TENSE_LABEL[self.tense] ?? '';
+        return {
+          kind, tier, id, isNew,
+          prompt: `${lemma.gloss}${when} — for ${label}`,
+          answer: l.roman,
+          roman: l.roman,
+          bangla: l.form,
+          audio: l.audio,
+          options: this.shuffleWithAnswer(l.roman, distinct.slice(0, 3), id),
+          note: self.irregular
+            ? `Irregular — this form breaks the ${lemma.roman} pattern.`
+            : self.negative
+              ? 'A suppletive negative — it is not formed with না.'
+              : lemma.note
+        };
+      }
 
       if (kind === 'say-word' || kind === 'say-sentence') {
         // Production: the learner is shown English and has to say the

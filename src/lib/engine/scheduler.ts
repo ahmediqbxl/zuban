@@ -44,6 +44,16 @@ export type ExerciseKind =
    * teaches the thing that lets you say a sentence you have not met.
    */
   | 'build-sentence'
+  /**
+   * Produce the right form of a verb for a given person.
+   *
+   * Distractors are the verb's *own* other forms, so the learner has to
+   * discriminate করি / করে / করেন rather than recognise a word. That is
+   * the agreement skill, and it is what lets you conjugate a verb you were
+   * never drilled on. Politeness is not decoration in Bangla — using the
+   * familiar ending with someone senior is rude.
+   */
+  | 'conjugate'
   // --- listening ---------------------------------------------------------
   | 'word-listen'      // hear a word     -> pick meaning
   | 'sentence-listen'  // hear a sentence -> pick meaning

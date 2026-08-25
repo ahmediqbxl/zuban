@@ -22,8 +22,9 @@ import { fileURLToPath } from 'node:url';
 import { analyze, glyphId, glyphsOf, isPrebase } from '../src/lib/content/scripts/bengali.ts';
 import { lookup } from '../content/bn/glyphs.ts';
 import { LEXEMES, SENTENCES, NOTES } from '../content/bn/source.ts';
+import { VERBS } from '../content/bn/verbs.ts';
 import type {
-  Course, Glyph, Lexeme, Sentence, GrammarNote, Provenance
+  Course, Glyph, Lexeme, Sentence, GrammarNote, Lemma, Provenance
 } from '../src/lib/content/schema.ts';
 import {
   applyReview, indexReview, reviewId, reviewStats, type ReviewFile
@@ -120,7 +121,12 @@ function tokenize(sentence: string): string[] {
 
 // ---------------------------------------------------------------------------
 
-function build(): { course: Course; gaps: string[]; dropped: number } {
+function build(): {
+  course: Course;
+  gaps: string[];
+  dropped: number;
+  lemmaProblems: string[];
+} {
   // --- Lexemes -------------------------------------------------------------
   let droppedLexemes = 0;
   const lexemes: Lexeme[] = LEXEMES.flatMap(([form, roman, gloss, pos, freqRank]) => {
@@ -261,6 +267,44 @@ function build(): { course: Course; gaps: string[]; dropped: number } {
     if (ns) s.notes = ns;
   }
 
+  // --- Verb paradigms ------------------------------------------------------
+  //
+  // Resolved against the lexicon rather than trusted: a paradigm naming a
+  // form the course does not teach is a content bug, and silently dropping
+  // it would leave a verb looking regular when a form is simply missing.
+  const byRoman = new Map<string, Lexeme>();
+  for (const l of lexemes) byRoman.set(l.roman, l);
+
+  const lemmaProblems: string[] = [];
+  const lemmas: Lemma[] = VERBS.map((v) => {
+    const forms = v.forms.flatMap(([roman, person, tense, flag]) => {
+      const lex = byRoman.get(roman);
+      if (!lex) {
+        lemmaProblems.push(`${v.roman}: form "${roman}" is not in the lexicon`);
+        return [];
+      }
+      // Point the lexeme back at its verb.
+      lex.lemma = `bn-verb-${v.roman}`;
+      return [{
+        lexeme: lex.id,
+        ...(person ? { person } : {}),
+        tense,
+        ...(flag === 'irregular' ? { irregular: true } : {}),
+        ...(flag === 'negative' ? { negative: true } : {})
+      }];
+    });
+    return {
+      id: `bn-verb-${v.roman}`,
+      form: v.form.normalize('NFC'),
+      roman: v.roman,
+      gloss: v.gloss,
+      stem: v.stem,
+      forms,
+      note: v.note,
+      provenance: DRAFT
+    };
+  });
+
   const course: Course = {
     meta: {
       code: 'bn-BD',
@@ -274,15 +318,21 @@ function build(): { course: Course; gaps: string[]; dropped: number } {
     glyphs: ordered,
     lexemes,
     sentences,
-    notes
+    notes,
+    lemmas
   };
 
-  return { course, gaps: [...gaps].sort(), dropped: droppedLexemes + droppedSentences };
+  return {
+    course,
+    gaps: [...gaps].sort(),
+    dropped: droppedLexemes + droppedSentences,
+    lemmaProblems
+  };
 }
 
 // ---------------------------------------------------------------------------
 
-const { course, gaps, dropped } = build();
+const { course, gaps, dropped, lemmaProblems } = build();
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(course, null, 2) + '\n', 'utf-8');
 
@@ -294,6 +344,16 @@ console.log(`  glyphs    ${course.glyphs.length}  (${conjuncts.length} conjuncts
 console.log(`  lexemes   ${course.lexemes.length}`);
 console.log(`  sentences ${course.sentences.length}`);
 console.log(`  notes     ${course.notes.length}`);
+
+const verbLexemes = course.lexemes.filter((l) => l.pos === 'verb');
+const inParadigm = verbLexemes.filter((l) => l.lemma).length;
+console.log(
+  `  verbs     ${course.lemmas.length} paradigms covering ${inParadigm}/${verbLexemes.length} verb forms`
+);
+if (inParadigm < verbLexemes.length) {
+  const orphans = verbLexemes.filter((l) => !l.lemma).map((l) => l.roman);
+  console.log(`            → ${orphans.length} not in any paradigm: ${orphans.slice(0, 8).join(', ')}${orphans.length > 8 ? '…' : ''}`);
+}
 
 // --- Review progress --------------------------------------------------------
 const reviewable = course.lexemes.length + course.sentences.length + dropped;
@@ -326,6 +386,11 @@ console.log('  ' + course.glyphs.slice(0, 12).map((g) => `${g.form}(${g.roman})`
 if (unknownRoman.length) {
   console.log(`\n⚠ ${unknownRoman.length} glyph(s) missing a romanization entry:`);
   console.log('  ' + unknownRoman.map((g) => `${g.form} [${g.id}]`).join('  '));
+}
+
+if (lemmaProblems.length) {
+  console.log(`\n⚠ ${lemmaProblems.length} verb paradigm problem(s):`);
+  for (const p of lemmaProblems) console.log(`  ${p}`);
 }
 
 if (gaps.length) {

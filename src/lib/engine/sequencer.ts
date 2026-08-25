@@ -161,6 +161,9 @@ function exercisesFor(tier: TargetTier, track: TrackConfig): ExerciseKind[] {
     if (track.listening) out.push('word-listen');
     if (track.production) out.push('word-spell');
     if (track.speech) out.push('say-word');
+    // Only produces a card for verbs whose paradigm is big enough to make
+    // a meaningful choice; buildTask returns null otherwise.
+    out.push('conjugate');
   } else {
     // cloze shows the sentence in Bangla script, so a learner who is not
     // studying the script gets the romanized variant instead. Offering the

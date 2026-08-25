@@ -97,6 +97,81 @@ export interface Lexeme {
   audio?: string;
   /** Register matters in Bangla: সাধু (literary) vs চলিত (colloquial). */
   register?: 'cholito' | 'sadhu' | 'neutral';
+  /**
+   * For an inflected form, the verb it belongs to. Lets the UI show করেন
+   * as "করা, said politely" rather than as a word in its own right.
+   */
+  lemma?: string;
+  provenance: Provenance;
+}
+
+// ---------------------------------------------------------------------------
+// Verb paradigms
+// ---------------------------------------------------------------------------
+
+/**
+ * Who the verb ending agrees with.
+ *
+ * Bangla encodes politeness in the verb itself, not just the pronoun, and
+ * the distinction is socially load-bearing rather than stylistic — using
+ * the familiar form with someone senior is rude. `2pol` and `3pol` share
+ * endings (আপনি করেন / তিনি করেন), which is why they are separate values
+ * rather than one "polite".
+ */
+export type Person = '1' | '2int' | '2fam' | '2pol' | '3' | '3pol';
+
+export type TenseAspect =
+  | 'present'
+  | 'present-cont'
+  | 'present-perfect'
+  | 'past'
+  | 'future'
+  | 'infinitive'
+  | 'imperative'
+  | 'verbal-noun'
+  | 'perfective-participle';
+
+export interface VerbForm {
+  /** Lexeme id this form corresponds to. */
+  lexeme: string;
+  /** Absent for non-finite forms — an infinitive agrees with nobody. */
+  person?: Person;
+  tense: TenseAspect;
+  /**
+   * True when the form cannot be derived from the stem by regular rule —
+   * যাওয়া's perfect is গেছি, not *যাছি. Flagged so the UI can say so
+   * instead of letting a learner infer a pattern that does not hold.
+   */
+  irregular?: boolean;
+  /**
+   * A negative form. Bangla usually negates with a following না, but আছে
+   * is suppletive — নেই, never *আছে না — so the negative belongs in the
+   * paradigm rather than being derivable.
+   */
+  negative?: boolean;
+}
+
+/**
+ * A verb as one thing rather than several unrelated words.
+ *
+ * Without this, করি / করে / করেন / করছি are four vocabulary items that
+ * happen to look similar, and a learner memorises each without ever seeing
+ * that they are one verb agreeing with different people. That is the
+ * difference between reciting phrases and conjugating a verb you have not
+ * been drilled on.
+ */
+export interface Lemma {
+  id: string;
+  /** Dictionary form, e.g. করা. */
+  form: string;
+  roman: string;
+  /** English infinitive, e.g. "to do". */
+  gloss: string;
+  /** Shared romanized stem, e.g. "kor". Display only. */
+  stem: string;
+  forms: VerbForm[];
+  /** Anything a learner should know about this verb specifically. */
+  note?: string;
   provenance: Provenance;
 }
 
@@ -162,6 +237,8 @@ export interface Course {
   lexemes: Lexeme[];
   sentences: Sentence[];
   notes: GrammarNote[];
+  /** Verb paradigms. Empty for languages without meaningful inflection. */
+  lemmas: Lemma[];
 }
 
 /** Only content a native speaker has signed off on reaches a learner. */
@@ -177,6 +254,7 @@ export function filterLearnerReady(course: Course): Course {
     glyphs: ok(course.glyphs),
     lexemes: ok(course.lexemes),
     sentences: ok(course.sentences),
-    notes: ok(course.notes)
+    notes: ok(course.notes),
+    lemmas: ok(course.lemmas ?? [])
   };
 }
