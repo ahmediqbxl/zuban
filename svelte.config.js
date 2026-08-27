@@ -15,6 +15,15 @@ export default {
     // Fully static output: the app is a PWA, there is no server runtime.
     adapter: adapter({ fallback: 'index.html', strict: false }),
     paths: { base },
+    serviceWorker: {
+      // Netlify consumes underscore-prefixed control files (_redirects,
+      // _headers) at deploy time and serves 404 for them. If one leaks into
+      // the precache manifest, cache.addAll() rejects, install fails, and
+      // the browser silently discards the whole service worker — no offline,
+      // no push. This exact failure shipped: the site worked, the SW never
+      // activated, and only an e2e run against the live URL surfaced it.
+      files: (filepath) => !/(^|\/)_[^/]*$/.test(filepath)
+    },
     alias: {
       $engine: 'src/lib/engine',
       $content: 'src/lib/content',

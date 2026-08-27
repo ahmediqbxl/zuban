@@ -19,6 +19,7 @@
     "audio:plan": "node scripts/generate-audio.mjs --dry-run",
     "test:e2e": "node tests/e2e/smoke.mjs",
     "test:e2e:prod": "node tests/e2e/smoke.mjs --prod",
+    "test:e2e:live": "node tests/e2e/smoke.mjs --prod --drafts --url https://zuban-app.netlify.app",
     "test:e2e:speaking": "node tests/e2e/smoke.mjs --speaking",
     "test:e2e:wrong": "node tests/e2e/smoke.mjs --wrong",
     "metrics": "node --env-file=.env scripts/retention.mjs",

@@ -25,6 +25,12 @@ import { chromium } from 'playwright';
 
 const args = process.argv.slice(2);
 const PROD = args.includes('--prod');
+// The deployed site currently ships drafts on purpose (ZUBAN_SHOW_DRAFTS=1
+// in netlify.toml) so there is something to QA before native review lands.
+// --drafts flips the review-gate expectations to match that flavor while
+// keeping the checks that must hold for ANY production build: an active
+// service worker, offline support, and a fully-served precache manifest.
+const DRAFTS = args.includes('--drafts');
 const SPEAKING = args.includes('--speaking');
 /**
  * Answer everything WRONG on purpose.
@@ -39,7 +45,8 @@ const WRONG = args.includes('--wrong');
 const PORT = args.includes('--port') ? args[args.indexOf('--port') + 1] : PROD ? '5192' : '5190';
 // `localhost`, not 127.0.0.1: on macOS vite binds only the IPv6 loopback
 // (::1), so a hardcoded IPv4 address gets ERR_CONNECTION_REFUSED there.
-const URL = `http://localhost:${PORT}`;
+// --url overrides the local server entirely, e.g. the deployed Netlify site.
+const URL = args.includes('--url') ? args[args.indexOf('--url') + 1].replace(/\/$/, '') : `http://localhost:${PORT}`;
 const SHOTS = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : null;
 // CHROMIUM_PATH points at a system Chromium (the cloud image ships one at
 // /opt/pw-browsers). Unset, Playwright launches its own managed browser —
@@ -136,7 +143,7 @@ page.on('console', (m) => {
   }
 });
 
-console.log(`\n${PROD ? 'PRODUCTION' : WRONG ? 'WRONG-ANSWERS' : SPEAKING ? 'SPEAKING-ONLY' : 'DEV (script track)'} smoke test against ${URL}\n`);
+console.log(`\n${PROD ? (DRAFTS ? 'PRODUCTION (drafts flavor)' : 'PRODUCTION') : WRONG ? 'WRONG-ANSWERS' : SPEAKING ? 'SPEAKING-ONLY' : 'DEV (script track)'} smoke test against ${URL}\n`);
 
 if (PROD) {
   // ── Production: the review gate and offline support ───────────────
@@ -144,20 +151,48 @@ if (PROD) {
   await page.waitForTimeout(2000);
   await shot(page, 'prod-home');
 
-  await step('unreviewed drafts are withheld', async () => {
-    const t = await page.locator('body').innerText();
-    if (/Unreviewed content/.test(t)) throw new Error('draft banner shipped to production');
-  });
+  if (DRAFTS) {
+    await step('the draft build announces itself', async () => {
+      const t = await page.locator('body').innerText();
+      if (!/Unreviewed content/.test(t)) throw new Error('drafts served with no banner');
+    });
+  } else {
+    await step('unreviewed drafts are withheld', async () => {
+      const t = await page.locator('body').innerText();
+      if (/Unreviewed content/.test(t)) throw new Error('draft banner shipped to production');
+    });
 
-  await step('the empty course explains itself', async () => {
-    const t = await page.locator('body').innerText();
-    if (!/being checked/i.test(t)) throw new Error('no explanation for the empty course');
-  });
+    await step('the empty course explains itself', async () => {
+      const t = await page.locator('body').innerText();
+      if (!/being checked/i.test(t)) throw new Error('no explanation for the empty course');
+    });
 
-  await step('dev-only test hooks are absent', async () => {
-    await page.goto(URL + '/learn', { waitUntil: 'networkidle' });
-    await page.waitForTimeout(800);
-    if ((await page.locator('[data-answer]').count()) > 0) throw new Error('data-answer leaked');
+    await step('dev-only test hooks are absent', async () => {
+      await page.goto(URL + '/learn', { waitUntil: 'networkidle' });
+      await page.waitForTimeout(800);
+      if ((await page.locator('[data-answer]').count()) > 0) throw new Error('data-answer leaked');
+    });
+  }
+
+  await step('every precached asset is actually served', async () => {
+    // The service worker's install is atomic: cache.addAll() rejects if ANY
+    // listed asset 404s, and a failed install discards the worker silently.
+    // A file that exists locally but is eaten by the host (_redirects on
+    // Netlify) is exactly the kind of thing only this check catches.
+    const sw = await page.evaluate(async (u) => (await fetch(u + '/service-worker.js')).text(), URL);
+    const paths = [...new Set([...sw.matchAll(/"(\/[^"]*)"/g)].map((m) => m[1]))]
+      .filter((p) => /\.[a-z0-9]+$/i.test(p) || p.startsWith('/_app/'));
+    if (paths.length < 5) throw new Error(`only ${paths.length} precache paths parsed`);
+    const missing = await page.evaluate(async ({ u, list }) => {
+      const bad = [];
+      for (const p of list) {
+        const r = await fetch(u + p, { method: 'HEAD' }).catch(() => null);
+        if (!r || !r.ok) bad.push(`${r ? r.status : 'ERR'} ${p}`);
+      }
+      return bad;
+    }, { u: URL, list: paths });
+    if (missing.length) throw new Error(missing.join(', '));
+    console.log(`    ${paths.length} precache assets verified`);
   });
 
   await page.goto(URL + '/', { waitUntil: 'networkidle' });
