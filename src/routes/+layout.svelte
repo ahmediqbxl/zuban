@@ -1,10 +1,35 @@
 <script lang="ts">
   import '../app.css';
+  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { base } from '$app/paths';
-  import { session } from '$ui/session.svelte';
+  import { session, course } from '$ui/session.svelte';
+  import { auth } from '$db/auth.svelte';
 
   let { children } = $props();
+
+  // Auth lives at the layout, not the You page: a magic-link redirect lands
+  // on `/`, and the Supabase client only consumes the token in the URL when
+  // it is created. Initialised only from the You page, sign-in appeared to
+  // do nothing unless you happened to navigate there afterwards.
+  onMount(() => {
+    auth.init();
+  });
+
+  // Sync without a button. Once on sign-in (which is also every app open,
+  // via INITIAL_SESSION), and again whenever a lesson ends — never on the
+  // card-answer path, and runSync itself never throws.
+  $effect(() => {
+    if (auth.state === 'signed-in') void auth.runSync(course.meta.code);
+  });
+
+  let lastPath = '';
+  $effect(() => {
+    const path = $page.url.pathname;
+    const leftLesson = lastPath.includes('/learn') && !path.includes('/learn');
+    lastPath = path;
+    if (leftLesson && auth.state === 'signed-in') void auth.runSync(course.meta.code);
+  });
 
   // The Script tab is the font-rendering check. It is meaningless — and a
   // little discouraging — for someone who has said they do not want to

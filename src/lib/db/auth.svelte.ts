@@ -28,8 +28,13 @@ class Auth {
   message = $state<string | null>(null);
   syncing = $state(false);
   lastSync = $state<string | null>(null);
+  private initialized = false;
 
+  // Idempotent: the layout calls this on every app open, and pages may call
+  // it too. A second call must not stack another onAuthStateChange listener.
   async init() {
+    if (this.initialized) return;
+    this.initialized = true;
     const sb = supabase();
     if (!sb) {
       this.state = 'unconfigured';
