@@ -28,10 +28,19 @@ export type VoiceStatus = 'unknown' | 'clip' | 'synth' | 'none';
 /** Bengali locales in preference order — Bangladesh first, this is bn-BD. */
 const BN_LOCALES = ['bn-BD', 'bn-IN', 'bn'];
 
+/** Persisted sound preference; 'on' is the only value that unmutes. */
+const SOUND_KEY = 'zuban:sound';
+
 class Speech {
   status = $state<VoiceStatus>('unknown');
   voiceName = $state<string | null>(null);
   speaking = $state(false);
+  // Sound is opt-in: the app speaking up unprompted in a quiet room is the
+  // kind of surprise that gets it closed. Muting silences the model voice
+  // and stops listen-only exercises being planned; playing back the
+  // learner's own recording stays available — that only ever follows an
+  // explicit tap on Record.
+  muted = $state(true);
 
   // --- recording ---------------------------------------------------------
   recording = $state(false);
@@ -44,7 +53,13 @@ class Speech {
   private voice: SpeechSynthesisVoice | null = null;
 
   async init() {
-    if (!browser || !('speechSynthesis' in window)) {
+    if (!browser) return;
+    try {
+      this.muted = localStorage.getItem(SOUND_KEY) !== 'on';
+    } catch {
+      // Storage unavailable: stay muted, the safe default.
+    }
+    if (!('speechSynthesis' in window)) {
       this.status = 'none';
       return;
     }
@@ -78,6 +93,7 @@ class Speech {
    * something actively misleading.
    */
   async say(text: string, clip?: string, base = ''): Promise<void> {
+    if (this.muted) return;
     if (canPlay(clip)) {
       this.speaking = true;
       try {
@@ -157,6 +173,15 @@ class Speech {
     this.lastUrl = null;
     this.hasRecording = false;
     this.chunks = [];
+  }
+
+  toggleMute(): void {
+    this.muted = !this.muted;
+    try {
+      localStorage.setItem(SOUND_KEY, this.muted ? 'off' : 'on');
+    } catch {
+      // Preference just won't survive a reload.
+    }
   }
 
   get canRecord(): boolean {

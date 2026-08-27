@@ -92,7 +92,17 @@
 {:else}
   <div class="spread" style="margin: 1rem 0 1.4rem;">
     <span class="tag">{task.isNew ? 'New' : 'Review'}</span>
-    <span class="faint small">{session.done} done · {session.dueCount} due</span>
+    <span class="row" style="gap: 0.6rem; align-items: center;">
+      <span class="faint small">{session.done} done · {session.dueCount} due</span>
+      <button
+        class="small"
+        style="min-height: 0; padding: 0.25rem 0.55rem;"
+        onclick={() => speech.toggleMute()}
+        aria-pressed={speech.muted}
+        aria-label={speech.muted ? 'Sound is off — turn it on' : 'Sound is on — turn it off'}
+        title={speech.muted ? 'Sound off' : 'Sound on'}
+      >{speech.muted ? '🔇' : '🔊'}</button>
+    </span>
   </div>
 
   <div class="card">
@@ -195,11 +205,14 @@
   </div>
 
   <!-- ── Voice controls ──────────────────────────────────────────── -->
-  {#if (canPlay(task.audio) || speech.status === 'synth') && (revealed || !isSpeaking) && task.bangla}
+  {@const hearable = !speech.muted && (canPlay(task.audio) || speech.status === 'synth')}
+  {#if (revealed || !isSpeaking) && task.bangla && (hearable || (isSpeaking && speech.canRecord))}
     <div class="row" style="margin-top: 0.8rem; gap: 0.5rem;">
-      <button onclick={() => hear()} disabled={speech.speaking} style="flex: 1;">
-        {speech.speaking ? '🔊 Playing…' : '🔊 Hear it'}
-      </button>
+      {#if hearable}
+        <button onclick={() => hear()} disabled={speech.speaking} style="flex: 1;">
+          {speech.speaking ? '🔊 Playing…' : '🔊 Hear it'}
+        </button>
+      {/if}
       {#if isSpeaking && speech.canRecord}
         {#if speech.recording}
           <button onclick={() => speech.stopRecording()} style="flex: 1; border-color: var(--bad); color: var(--bad);">■ Stop</button>

@@ -82,7 +82,9 @@ export const coverageModel = buildCoverageModel(course);
 const AUDIO_REQUIRED = new Set(['word-listen', 'sentence-listen', 'glyph-find']);
 
 function hasVoice(clip?: string): boolean {
-  return Boolean(clip) || speech.status === 'synth';
+  // Muted counts as voiceless: a listen card served while the app is
+  // silenced is unanswerable, not merely quiet.
+  return !speech.muted && (Boolean(clip) || speech.status === 'synth');
 }
 
 export const glyphById = new Map(course.glyphs.map((g) => [g.id, g]));
